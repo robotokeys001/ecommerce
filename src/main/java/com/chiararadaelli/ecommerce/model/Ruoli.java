@@ -7,6 +7,7 @@ import jakarta.persistence.*;
 
 @Data
 @Entity
+@Table(name = "ruoli")
 public class Ruoli {
 
 

@@ -43,7 +43,7 @@ public class AdminController {
     }
 
     @RequestMapping("/deleteProdotto")
-    public ModelAndView deleteClass(Model model, @RequestParam Long id) {
+    public ModelAndView deleteProdotti(Model model, @RequestParam Long id) {
         prodottiRepository.deleteById(id);
         ModelAndView modelAndView = new ModelAndView("redirect:/admin/displayProdotti");
         return modelAndView;

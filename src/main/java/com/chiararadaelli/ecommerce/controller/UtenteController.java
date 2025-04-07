@@ -20,7 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 public class UtenteController {
 
       @GetMapping("/displayCarrello")
-    public ModelAndView displayCourses(Model model, HttpSession session) {
+    public ModelAndView displayCarrello(Model model, HttpSession session) {
         Utenti utente = (Utenti) session.getAttribute("loggedInPerson");
         ModelAndView modelAndView = new ModelAndView("carrello.html");
         modelAndView.addObject("utente",utente);

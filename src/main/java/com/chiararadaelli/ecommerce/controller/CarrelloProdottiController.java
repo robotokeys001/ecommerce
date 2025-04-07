@@ -8,7 +8,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 
 import com.chiararadaelli.ecommerce.model.Prodotti;
-import com.chiararadaelli.ecommerce.repository.UtentiRepository;
 import com.chiararadaelli.ecommerce.service.CarrelloProdottiService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,8 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/carrello")
 public class CarrelloProdottiController {
     
-     @Autowired
-    UtentiRepository utentiRepository;
+   
 
      @Autowired
     private CarrelloProdottiService carrelloProdottiService;
