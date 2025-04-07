@@ -11,7 +11,8 @@ import com.chiararadaelli.ecommerce.repository.UtentiRepository;
 
 @Service
 public class UtentiService {
-     @Autowired
+    
+    @Autowired
     private UtentiRepository utentiRepository;
 
     @Autowired
@@ -22,11 +23,11 @@ public class UtentiService {
 
     public boolean createNewPerson(Utenti utente){
         boolean isSaved = false;
-        Ruoli ruolo = ruoliRepository.getRuoloByNome(Costanti.UTENTE_ROLE);
+        Ruoli ruolo = ruoliRepository.getRuoloByNomeRuolo(Costanti.UTENTE_ROLE);
         utente.setRuoli(ruolo);
         utente.setPassword(passwordEncoder.encode(utente.getPassword()));
         utente = utentiRepository.save(utente);
-        if (null != utente && utente.getUtenteId() > 0)
+        if (null != utente && utente.getUtentiId() > 0)
         {
             isSaved = true;
         }

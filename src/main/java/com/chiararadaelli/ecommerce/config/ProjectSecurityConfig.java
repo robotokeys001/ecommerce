@@ -2,6 +2,7 @@ package com.chiararadaelli.ecommerce.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -14,43 +15,51 @@ import org.springframework.security.web.SecurityFilterChain;
 public class ProjectSecurityConfig {
 
 
+    
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http
-            .csrf(csrf -> csrf.ignoringRequestMatchers("/saveMsg").ignoringRequestMatchers("/public/**"))
-             .authorizeHttpRequests(auth -> auth
-             .requestMatchers("/displayMessages").hasRole("ADMIN")
-             .requestMatchers("addProdotti").hasRole("ADMIN")
-             .requestMatchers("/dashboard").authenticated()
-             .requestMatchers("/login").permitAll()
-             .requestMatchers("/public/**").permitAll()//dice a spring che tutti i path con il prefisso
-            //     .requestMatchers("/admin/**").hasRole("ROLE_ADMIN") // /admin/** richiede ruolo ADMIN
-            //     .requestMatchers("/user/**").hasRole("ROLE_USER") // /user/** richiede ruolo USER
-            //     .anyRequest().permitAll() // Tutte le altre richieste richiedono autenticazione
-            )
-            .formLogin(form -> form
-                .loginPage("/login") // Pagina di login personalizzata
-                .defaultSuccessUrl("/dashboard") // Reindirizzamento dopo login riuscito
-                .failureUrl("/login?error=true") // Reindirizzamento dopo login fallito
-                .permitAll() // Permetti l'accesso alla pagina di login
-            )
-            .logout(logout -> logout
-                .logoutSuccessUrl("/login?logout=true") // Reindirizzamento dopo logout
-                .invalidateHttpSession(true) // Invalida la sessione HTTP
-                .permitAll() // Permetti l'accesso alla pagina di logout
-            )
-            .httpBasic(basic -> basic.disable()); // Disabilita HTTP Basic
-        http.headers(headers -> headers.frameOptions().disable());//da utilizzare solo per h2 durante lo svilupo
+    SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
 
+        http.csrf((csrf) -> csrf.ignoringRequestMatchers("/saveMsg").ignoringRequestMatchers("/public/**")
+                .ignoringRequestMatchers("/api/**").ignoringRequestMatchers("/data-api/**"))
+                .authorizeHttpRequests((requests) -> requests.requestMatchers("/dashboard").authenticated()
+                    .requestMatchers("/style.css", "/img/**", "/js/**").permitAll() // Allow static resources
+                    .requestMatchers("/displayMessages/**").hasRole("ADMIN")
+                    .requestMatchers("/closeMsg/**").hasRole("ADMIN")
+                    .requestMatchers("/admin/**").hasRole("ADMIN")
+                    .requestMatchers("/api/**").authenticated()
+                    .requestMatchers("/data-api/**").authenticated()
+                    .requestMatchers("/displayProfile").authenticated()
+                    .requestMatchers("/updateProfile").authenticated()
+                    .requestMatchers("/utente/**").hasRole("UTENTE")
+                    /*.requestMatchers("/profile/**").permitAll()
+                    .requestMatchers("/courseses/**").permitAll()
+                    .requestMatchers("/contacts/**").permitAll()
+                     .requestMatchers("/data-api/**").permitAll()*/
+                    .requestMatchers("/", "/home").permitAll()
+                    .requestMatchers("/holidays/**").permitAll()
+                    .requestMatchers("/contact").permitAll()
+                    .requestMatchers("/saveMsg").permitAll()
+                    .requestMatchers("/courses").permitAll()
+                    .requestMatchers("/about").permitAll()
+                    .requestMatchers("/assets/**").permitAll()
+                    .requestMatchers("/login").permitAll()
+                    .requestMatchers("/logout").permitAll()
+                    .requestMatchers("/public/**").permitAll())
+                .formLogin(loginConfigurer -> loginConfigurer.loginPage("/login")
+                        .defaultSuccessUrl("/dashboard").failureUrl("/login?error=true").permitAll())
+                .logout(logoutConfigurer -> logoutConfigurer.logoutSuccessUrl("/login?logout=true")
+                        .invalidateHttpSession(true).permitAll())
+                .httpBasic(Customizer.withDefaults());
 
         return http.build();
     }
-
 
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
+
+
     // protected void configure(AuthenticationManagerBuilder auth) throws Exception {
     //     auth.inMemoryAuthentication()
     //     .withUser("user").password("123").roles("USER")

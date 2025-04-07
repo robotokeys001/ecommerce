@@ -14,7 +14,7 @@ public class Categorie {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long categorieId;
 
     private String nome;
 }

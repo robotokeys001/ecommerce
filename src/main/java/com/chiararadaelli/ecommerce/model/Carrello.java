@@ -9,24 +9,18 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Data;
 
+
 @Entity
 @Data
-@Table(name= "cart_items")
-public class CarrelloProdotti {
+@Table(name = "carrello")
+public class Carrello {
+    
     
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private int id;
 
     @ManyToOne
-    @JoinColumn(name = "prodotti_id")
-    private Prodotti prodotti;
-
-    
-    @ManyToOne
-    @JoinColumn(name="carrello_id")
-    private Carrello carrello;
-
-    private int quantita;
+    @JoinColumn(name="utenti_id")
+    private Utenti utenti;
 }

@@ -1,6 +1,7 @@
 package com.chiararadaelli.ecommerce.model;
 
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -17,8 +18,9 @@ import lombok.Data;
 public class Utenti {
     
     @Id
+     @Column(name = "utenti_id")
     @GeneratedValue(strategy= GenerationType.AUTO,generator="native")
-    private Long utenteId;
+    private Long utentiId;
 
    
     private String nome;
@@ -29,7 +31,7 @@ public class Utenti {
 
 
     @OneToOne(fetch = FetchType.EAGER,cascade = CascadeType.PERSIST, targetEntity = Ruoli.class)
-    @JoinColumn(name = "ruoli_id", referencedColumnName = "ruoli_id",nullable = false)
+    @JoinColumn(name = "ruoli_id", referencedColumnName = "ruoliId",nullable = false)
     private Ruoli ruoli;
 
 }

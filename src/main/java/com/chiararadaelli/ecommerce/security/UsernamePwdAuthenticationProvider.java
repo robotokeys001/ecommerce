@@ -34,7 +34,7 @@ public class UsernamePwdAuthenticationProvider
         String email = authentication.getName();
         String pwd = authentication.getCredentials().toString();
         Utenti utente = utentiRepository.readByEmail(email);
-        if(null != utente && utente.getUtenteId()>0 &&
+        if(null != utente && utente.getUtentiId()>0 &&
                 passwordEncoder.matches(pwd,utente.getPassword())){
             return new UsernamePasswordAuthenticationToken(
                     email, null, getGrantedAuthorities(utente.getRuoli()));
@@ -45,7 +45,7 @@ public class UsernamePwdAuthenticationProvider
 
     private List<GrantedAuthority> getGrantedAuthorities(Ruoli ruolo) {
         List<GrantedAuthority> grantedAuthorities = new ArrayList<>();
-        grantedAuthorities.add(new SimpleGrantedAuthority("ROLE_"+ruolo.getRoleName()));
+        grantedAuthorities.add(new SimpleGrantedAuthority("ROLE_"+ruolo.getNomeRuolo()));
         return grantedAuthorities;
     }
 
