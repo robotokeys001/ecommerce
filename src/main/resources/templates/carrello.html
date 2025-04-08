@@ -1,20 +1,56 @@
 <!DOCTYPE html>
-<html>
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Carrello</title>
 </head>
 <body>
-    <h1>Carrello di <span th:text="${utente.nome}">[Nome]</span></h1>
+    <h1>Il tuo Carrello</h1>
 
-    <ul>
-        <li th:each="item : ${prodottiNelCarrello}">
-            <span th:text="${item.prodotto.nome}">Nome prodotto</span> - 
-            Quantità: <span th:text="${item.quantita}">1</span>
-        </li>
-    </ul>
+    <div th:if="${carrelloItems == null or carrelloItems.isEmpty()}">
+        <p>Il tuo carrello è vuoto.</p>
+        <p><a th:href="@{/listaprodotti}">Torna allo shop</a></p>
+    </div>
 
-    <form th:action="@{/carrello/acquista}" method="post">
-        <button type="submit">Acquista</button>
-    </form>
+    <div th:unless="${carrelloItems == null or carrelloItems.isEmpty()}">
+        <table>
+            <thead>
+                <tr>
+                    <th>Prodotto</th>
+                    <th>Quantità</th>
+                    <th>Prezzo Unitario</th>
+                    <th>Prezzo Totale</th>
+                    <th>Azioni</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="item : ${carrelloItems}">
+                    <td th:text="${item.prodotto?.nomeProdotto}">Nome Prodotto</td>
+                    <td th:text="${item.quantita}">Quantità</td>
+                    <td th:text="${#numbers.formatCurrency(item.prodotto?.prezzo)}">Prezzo</td>
+                    <td th:text="${#numbers.formatCurrency(item.prodotto?.prezzo * item.quantita)}">Totale</td>
+                    <td>
+                        <form th:action="@{/carrello/rimuovi/{prodottoId}(prodottoId=${item.prodotto?.id})}" method="post">
+                            <input type="hidden" name="_method" value="delete" />
+                            <button type="submit">Rimuovi</button>
+                        </form>
+                        <form th:action="@{/carrello/aggiorna}" method="post">
+                            <input type="hidden" name="_method" value="put" />
+                            <input type="hidden" name="prodottoId" th:value="${item.prodotto?.id}" />
+                            <label for="quantita">Quantità:</label>
+                            <input type="number" id="quantita" name="quantita" th:value="${item.quantita}" min="1" />
+                            <button type="submit">Aggiorna</button>
+                        </form>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <p>Totale Carrello: <span th:text="${#numbers.formatCurrency(carrelloItems.stream().mapToDouble(item -> item.prodotto?.prezzo * item.quantita).sum())}"></span></p>
+        <form th:action="@{/carrello/svuota}" method="post">
+            <button type="submit">Svuota Carrello</button>
+        </form>
+        <p><a th:href="@{/checkout}">Procedi al Checkout</a></p>
+        <p><a th:href="@{/listaprodotti}">Continua lo shopping</a></p>
+    </div>
 </body>
 </html>

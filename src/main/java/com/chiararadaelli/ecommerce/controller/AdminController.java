@@ -1,9 +1,15 @@
 package com.chiararadaelli.ecommerce.controller;
 
 import java.io.File;
+import java.io.IOException;
 import java.math.BigDecimal;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -31,6 +37,10 @@ import lombok.extern.slf4j.Slf4j;
 @Controller
 @RequestMapping("/admin")
 public class AdminController {
+
+    @Value("${upload.directory}")
+    private String uploadDirectory;
+
 
     private final UtentiService utentiService;
 
@@ -177,37 +187,38 @@ public ModelAndView getProducts(
         return mView;
     }
 /*-------------------------crea prodotti------------------------------------- */
-@PostMapping("/prodotti/add")
-public String addProduct(
-        @RequestParam("nome") String nomeProdotto,
-        @RequestParam("categoriaid") Long categorieId,
-        @RequestParam("price") BigDecimal prezzo,
-        @RequestParam("quantita") int quantita,
-        @RequestParam("descrizione") String descrizione,
-        @RequestParam("immagine") MultipartFile immagine,
-        RedirectAttributes redirectAttributes) {
+  @PostMapping("/prodotti/add")
+    public String addProduct(
+            @RequestParam("nome") String nomeProdotto,
+            @RequestParam("categoriaid") Long categorieId,
+            @RequestParam("price") BigDecimal prezzo,
+            @RequestParam("inventario") int inventario,
+            @RequestParam("descrizione") String descrizione,
+            @RequestParam("immagine") MultipartFile immagine,
+            RedirectAttributes redirectAttributes) {
 
-    try {
-        String uploadDir = "src/main/resources/static/uploads/";
-        String fileName = System.currentTimeMillis() + "_" + immagine.getOriginalFilename();
-        File uploadPath = new File(uploadDir);
-        if (!uploadPath.exists()) {
-            uploadPath.mkdirs(); // crea la cartella se non esiste
+        try {
+            // Crea la directory di upload se non esiste
+            Path uploadPath = Paths.get(uploadDirectory);
+            if (!Files.exists(uploadPath)) {
+                Files.createDirectories(uploadPath);
+            }
+
+            String fileName = System.currentTimeMillis() + "_" + immagine.getOriginalFilename();
+            Path filePath = Paths.get(uploadDirectory, fileName);
+            Files.copy(immagine.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+
+            prodottiService.createProdotto(
+                    nomeProdotto, categorieId, prezzo, inventario, descrizione, fileName // Salva solo il nome nel DB
+            );
+
+            redirectAttributes.addFlashAttribute("successMessage", "Prodotto aggiunto con successo.");
+
+        } catch (IOException e) {
+            log.error("Errore durante l'aggiunta del prodotto", e);
+            redirectAttributes.addFlashAttribute("errorMessage", "Errore durante l'aggiunta del prodotto.");
         }
 
-        File filePath = new File(uploadDir + fileName);
-        immagine.transferTo(filePath); // salva il file fisicamente
-
-        prodottiService.createProdotto(
-                nomeProdotto, categorieId, prezzo, quantita, descrizione, fileName // salva solo il nome nel DB
-        );
-
-        redirectAttributes.addFlashAttribute("successMessage", "Prodotto aggiunto con successo.");
-    } catch (Exception e) {
-        log.error("Errore durante l'aggiunta del prodotto", e);
-        redirectAttributes.addFlashAttribute("errorMessage", "Errore durante l'aggiunta del prodotto.");
+        return "redirect:/admin/prodotti";
     }
-
-    return "redirect:/admin/prodotti";
-}
 }

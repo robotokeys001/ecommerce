@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -35,21 +34,10 @@ public class PublicController {
     @RequestMapping(value ="/registrazione",method = { RequestMethod.GET})
     public String displayRegisterPage(Model model) {
         model.addAttribute("utente", new Utenti());
-        return "registrazione.html";
+        return "registrazione";
     }
 
-    @RequestMapping(value ="/createUser",method = { RequestMethod.POST})
-    public String createUser(@ModelAttribute("utente") Utenti utente, Errors errors) {
-        if(errors.hasErrors()){
-            return "registrazione.html";
-        }
-        boolean isSaved = utentiService.createUser(utente);
-        if(isSaved){
-            return "redirect:/login?register=true";
-        }else {
-            return "registrazione.html";
-        }
-    }
+  
  @RequestMapping(value = "newuserregister", method = RequestMethod.POST)
     public ModelAndView newUseRegister(@ModelAttribute Utenti utente, RedirectAttributes redirectAttributes) {
         try {
@@ -58,21 +46,22 @@ public class PublicController {
                 if (ruoloUtente != null) {
                     utente.setRuoli(ruoloUtente);
                     utentiService.createUser(utente); // La codifica della password dovrebbe avvenire qui
-                    redirectAttributes.addFlashAttribute("successMessage", "Utente registrato con successo.");
-                    return new ModelAndView("userLogin");
+                    redirectAttributes.addFlashAttribute("msg", "Registrazione completata. Puoi accedere.");
+                    return new ModelAndView("redirect:/login?register=true");
                 } else {
                     redirectAttributes.addFlashAttribute("errorMessage", "Errore durante la registrazione: Ruolo utente non trovato.");
-                    return new ModelAndView("register");
+                    return new ModelAndView("registrazione");
                 }
             } else {
                 redirectAttributes.addFlashAttribute("errorMessage", utente.getNome() + " is taken. Please choose a different username.");
-                return new ModelAndView("register");
+                return new ModelAndView("registrazione");
             }
         } catch (Exception e) {
             log.error("Error during user registration", e);
             redirectAttributes.addFlashAttribute("errorMessage", "Error during user registration.");
-            return new ModelAndView("register");
+            return new ModelAndView("registrazione");
         }
+        
     }
 
     @GetMapping("/profileDisplay")

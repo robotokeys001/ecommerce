@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.chiararadaelli.ecommerce.costanti.Costanti;
@@ -70,17 +71,29 @@ public class UtentiService {
     public void salvaUtente(Utenti utente) {
         // Controllo se l'utente è nuovo (senza ID) o esistente
         boolean isNuovo = (utente.getUtentiId() == null);
-    
+
         // Se la password è già cifrata o vuota, non ricifrare
         if (isNuovo || utente.getPassword().length() < 60) { // BCrypt ha 60 caratteri
             String encodedPassword = passwordEncoder.encode(utente.getPassword());
             utente.setPassword(encodedPassword);
         }
-        if (utentiRepository.existsByEmail(utente.getEmail())) {
+
+        // Controllo email solo se l'utente esistente sta cambiando email
+        if (!isNuovo) {
+            Utenti existingUtente = utentiRepository.findById(utente.getUtentiId()).orElse(null);
+            if (existingUtente != null && !existingUtente.getEmail().equalsIgnoreCase(utente.getEmail()) && utentiRepository.existsByEmail(utente.getEmail())) {
+                throw new RuntimeException("Email già in uso");
+            }
+        } else if (isNuovo && utentiRepository.existsByEmail(utente.getEmail())) {
             throw new RuntimeException("Email già in uso");
         }
-    
+
         utentiRepository.save(utente);
+    }
+
+    public Utenti findByEmail(String email) {
+        return utentiRepository.findByEmail(email)
+            .orElseThrow(() -> new UsernameNotFoundException("Utente non trovato con email: " + email));
     }
 
     // ... altri metodi

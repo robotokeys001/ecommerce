@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Gestione Utenti</title>
+</head>
+<body>
+    <h1>Gestione Utenti</h1>
+
+    <div th:if="${successMessage}" class="success">
+        <p th:text="${successMessage}"></p>
+    </div>
+    <div th:if="${errorMessage}" class="error">
+        <p th:text="${errorMessage}"></p>
+    </div>
+
+    <div th:if="${utenti == null or utenti.isEmpty()}">
+        <p>Nessun utente registrato.</p>
+    </div>
+    <div th:unless="${utenti == null or utenti.isEmpty()}">
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nome Utente</th>
+                    <th>Email</th>
+                    <th>Ruolo</th>
+                    <th>Azioni</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="utente : ${utenti}">
+                    <td th:text="${utente.utentiId}">ID</td>
+                    <td th:text="${utente.nome}">Nome</td>
+                    <td th:text="${utente.email}">Email</td>
+                    <td th:text="${utente.ruoli?.nomeRuolo}">Ruolo</td>
+                    <td>
+                        </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <p><a th:href="@{/admin/dashboard}">Torna alla Dashboard</a></p>
+</body>
+</html>

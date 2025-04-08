@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Aggiungi Prodotto</title>
+</head>
+<body>
+    <h1>Aggiungi Nuovo Prodotto</h1>
+
+    <div th:if="${errorMessage}" class="error">
+        <p th:text="${errorMessage}"></p>
+    </div>
+
+    <form th:action="@{/admin/prodotti/add}" method="post" enctype="multipart/form-data">
+        <div>
+            <label for="nome">Nome Prodotto:</label>
+            <input type="text" id="nome" name="nome" required="required"/>
+        </div>
+        <div>
+            <label for="categoriaid">Categoria:</label>
+            <select id="categoriaid" name="categoriaid" required="required">
+                <option th:each="categoria : ${categorie}" th:value="${categoria.categorieId}" th:text="${categoria.nomeCategorie}"></option>
+            </select>
+        </div>
+        <div>
+            <label for="price">Prezzo:</label>
+            <input type="number" id="price" name="price" step="0.01" required="required"/>
+        </div>
+        <div>
+            <label for="inventario">Quantità:</label>
+            <input type="number" id="inventario" name="inventario" required="required"/>
+        </div>
+        <div>
+            <label for="descrizione">Descrizione:</label>
+            <textarea id="descrizione" name="descrizione"></textarea>
+        </div>
+        <div>
+            <label for="immagine">Immagine:</label>
+            <input type="file" id="immagine" name="immagine"/>
+        </div>
+        <button type="submit">Aggiungi Prodotto</button>
+    </form>
+
+    <p><a th:href="@{/admin/prodotti}">Torna alla Gestione Prodotti</a></p>
+    <p><a th:href="@{/admin/dashboard}">Torna alla Dashboard</a></p>
+</body>
+</html>

@@ -1,10 +1,41 @@
 <!DOCTYPE html>
-<html>
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Homepage</title>
 </head>
 <body>
-    <h1>Benvenuto nel sito</h1>
-    <p>Effettua il <a th:href="@{/login}">login</a> o <a th:href="@{/registrazione}">registrati</a></p>
+    <h1>Benvenuto nella Homepage del nostro Ecommerce!</h1>
+    <p th:if="${username}">Ciao, <span th:text="${username}"></span>!</p>
+    <p th:unless="${username}">Benvenuto, ospite!</p>
+
+    <div th:if="${msg}">
+        <p th:text="${msg}"></p>
+    </div>
+
+    <div th:if="${products != null and not products.isEmpty()}">
+        <h2>I nostri prodotti:</h2>
+        <ul>
+            <li th:each="prodotto : ${products}">
+                <a th:href="@{/prodotto/{id}(id=${prodotto.id})}" th:text="${prodotto.nome}">Nome Prodotto</a> - Prezzo: <span th:text="${#numbers.formatCurrency(prodotto.prezzo)}"></span>
+            </li>
+        </ul>
+    </div>
+    <div th:if="${products == null or products.isEmpty() and msg == null}">
+        <p>Nessun prodotto disponibile al momento.</p>
+    </div>
+
+    <ul>
+        <li><a th:href="@{/prodotti}">Visualizza tutti i prodotti</a></li>
+        <li><a th:href="@{/categorie}">Esplora le categorie</a></li>
+        <li><a th:href="@{/carrello/display}">Vai al carrello</a></li>
+        <li sec:authorize="!isAuthenticated()">
+            <a th:href="@{/login}">Accedi</a> oppure <a th:href="@{/registrazione}">Registrati</a>
+        </li>
+        <li sec:authorize="isAuthenticated()">
+            <form th:action="@{/logout}" method="post">
+                <input type="submit" value="Logout"/>
+            </form>
+        </li>
+    </ul>
 </body>
 </html>

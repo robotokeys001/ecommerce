@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Profilo Utente</title>
+</head>
+<body>
+    <h1>Il tuo Profilo</h1>
+
+    <div th:if="${msg}" class="success">
+        <p th:text="${msg}"></p>
+    </div>
+
+    <div th:if="${userid}">
+        <p>ID Utente: <span th:text="${userid}"></span></p>
+        <p>Nome Utente: <span th:text="${username}"></span></p>
+        <p>Email: <span th:text="${email}"></span></p>
+
+        <p><a th:href="@{/utente/modifica-profilo}">Modifica il tuo profilo</a></p>
+    </div>
+    <div th:unless="${userid}">
+        <p th:text="${msg}"></p>
+    </div>
+
+    <p><a th:href="@{/utente/dashboard}">Torna alla Dashboard</a></p>
+</body>
+</html>

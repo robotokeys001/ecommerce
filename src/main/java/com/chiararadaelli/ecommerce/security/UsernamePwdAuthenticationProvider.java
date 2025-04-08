@@ -1,61 +1,57 @@
 package com.chiararadaelli.ecommerce.security;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
-import com.chiararadaelli.ecommerce.model.Ruoli;
-import com.chiararadaelli.ecommerce.model.Utenti;
-import com.chiararadaelli.ecommerce.service.UtentiService;
-
-import java.util.ArrayList;
-import java.util.List;
+import lombok.extern.slf4j.Slf4j;
 
 @Component
-public class UsernamePwdAuthenticationProvider
-        implements AuthenticationProvider
-{
-    private final UtentiService utentiService;
-    private final PasswordEncoder passwordEncoder;
+@Slf4j
+public class UsernamePwdAuthenticationProvider implements AuthenticationProvider {
 
-    @Autowired
-    public UsernamePwdAuthenticationProvider(UtentiService utentiService, PasswordEncoder passwordEncoder) {
-        this.utentiService = utentiService;
+    private final PasswordEncoder passwordEncoder;
+    private final UserDetailsService userDetailsService; // Inietta CustomUserDetailsService
+
+    public UsernamePwdAuthenticationProvider(PasswordEncoder passwordEncoder, UserDetailsService userDetailsService) {
         this.passwordEncoder = passwordEncoder;
+        this.userDetailsService = userDetailsService;
     }
 
     @Override
-    public Authentication authenticate(Authentication authentication)
-            throws AuthenticationException {
+    public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         String email = authentication.getName();
         String password = authentication.getCredentials().toString();
-        Utenti utente = utentiService.readByEmail(email);
-        if(null != utente && utente.getUtentiId()>0 &&
-                passwordEncoder.matches(password, utente.getPassword())){
-            return new UsernamePasswordAuthenticationToken(
-                    email, null, getGrantedAuthorities(utente.getRuoli()));
-        }else{
-            throw new BadCredentialsException("Invalid credentials!");
-        }
-    }
+        log.info("Tentativo di login per utente: {}", email);
 
-    private List<GrantedAuthority> getGrantedAuthorities(Ruoli ruolo) {
-        List<GrantedAuthority> grantedAuthorities = new ArrayList<>();
-        grantedAuthorities.add(new SimpleGrantedAuthority("ROLE_"+ruolo.getNomeRuolo()));
-        return grantedAuthorities;
+        UserDetails userDetails = userDetailsService.loadUserByUsername(email);
+
+        if (userDetails == null) {
+            log.warn("Login fallito: utente non trovato con email {}", email);
+            throw new BadCredentialsException("Credenziali non valide!");
+        }
+
+        if (!passwordEncoder.matches(password, userDetails.getPassword())) {
+            log.warn("Login fallito: password errata per utente {}", email);
+            log.info("Password inserita: {}", password);
+            log.info("Password salvata (hash): {}", userDetails.getPassword());
+            log.info("Match? {}", passwordEncoder.matches(password, userDetails.getPassword()));
+            throw new BadCredentialsException("Credenziali non valide!");
+        }
+
+        log.info("Login riuscito per utente: {}", email);
+        return new UsernamePasswordAuthenticationToken(
+            userDetails, password, userDetails.getAuthorities());
     }
 
     @Override
     public boolean supports(Class<?> authentication) {
         return authentication.equals(UsernamePasswordAuthenticationToken.class);
     }
-    
 }
-

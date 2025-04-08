@@ -4,6 +4,7 @@ import java.security.Principal;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -39,21 +40,29 @@ public class UtenteController {
 
 
     @GetMapping("/dashboard")
-    public String dashboard() {
-        return "utenteDashboard"; // nome della view (es: utenteDashboard.html)
+public String dashboard(Model model) {
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    log.info("Authentication object in dashboard: {}", authentication);
+    if (authentication != null) {
+        log.info("Principal object in dashboard: {}", authentication.getPrincipal());
+        model.addAttribute("principalObject", authentication.getPrincipal());
+    } else {
+        log.warn("Authentication object is null in dashboard!");
+        model.addAttribute("principalObject", null);
     }
-
+    return "utenteDashboard";
+}
     @GetMapping("/displayCarrello")
-    public ModelAndView displayCarrello(Model model, HttpSession session) {
-        Utenti utente = (Utenti) session.getAttribute("loggedInPerson");
+    public ModelAndView displayCarrello(Principal principal) {
+        Utenti utente = utentiService.readByEmail(principal.getName());
         ModelAndView modelAndView = new ModelAndView("carrello.html");
         modelAndView.addObject("utente", utente);
         return modelAndView;
     }
 
     @GetMapping("/")
-    public ModelAndView indexPage() {
-        ModelAndView mView = new ModelAndView("index");
+    public ModelAndView homePage() {
+        ModelAndView mView = new ModelAndView("home");
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         mView.addObject("username", username);
         List<Prodotti> prodotti = prodottiService.findAll(); // Assumi un metodo nel tuo service
@@ -70,7 +79,7 @@ public class UtenteController {
 public String mostraFormProfilo(Model model, Principal principal) {
     Utenti utente = utentiService.readByEmail(principal.getName());
     model.addAttribute("utente", utente);
-    return "utente/modifica_profilo";
+    return "/modifica-profilo";
 }
 @PostMapping("/modifica-profilo")
 public String aggiornaProfilo(@ModelAttribute("utente") Utenti utenteModificato, Principal principal, RedirectAttributes redirectAttributes) {
@@ -81,14 +90,14 @@ public String aggiornaProfilo(@ModelAttribute("utente") Utenti utenteModificato,
 
     utentiService.salvaUtente(utente);
     redirectAttributes.addFlashAttribute("messaggio", "Profilo aggiornato con successo!");
-    return "redirect:/utente/home";
+    return "redirect:/utente/dashboard";
 }
-    @GetMapping("/lista-prodotti")
-    public ModelAndView mostraListaProdotti() {
-        List<Prodotti> prodotti = prodottiService.findAll();
-        ModelAndView mv = new ModelAndView("listaprodotti.html");
-        mv.addObject("products", prodotti);
-        return mv;
-}
+//     @GetMapping("/listaprodotti")
+//     public ModelAndView mostraListaProdotti() {
+//         List<Prodotti> prodotti = prodottiService.findAll();
+//         ModelAndView mv = new ModelAndView("listaprodotti.html");
+//         mv.addObject("products", prodotti);
+//         return mv;
+// }
 
 }

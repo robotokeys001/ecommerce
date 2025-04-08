@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Gestione Prodotti</title>
+</head>
+<body>
+    <h1>Gestione Prodotti</h1>
+
+    <div th:if="${successMessage}" class="success">
+        <p th:text="${successMessage}"></p>
+    </div>
+    <div th:if="${errorMessage}" class="error">
+        <p th:text="${errorMessage}"></p>
+    </div>
+
+    <div>
+        <form th:action="@{/admin/prodotti}" method="get">
+            <label for="search">Cerca Prodotto:</label>
+            <input type="text" id="search" name="search" th:value="${search}"/>
+            <button type="submit">Cerca</button>
+        </form>
+        <p><a th:href="@{/admin/prodotti/add}">Aggiungi Nuovo Prodotto</a></p>
+    </div>
+
+    <div th:if="${prodotti.content == null or prodotti.content.isEmpty()}">
+        <p>Nessun prodotto trovato.</p>
+    </div>
+    <div th:unless="${prodotti.content == null or prodotti.content.isEmpty()}">
+        <table>
+            <thead>
+                <tr>
+                    <th>Nome</th>
+                    <th>Categoria</th>
+                    <th>Prezzo</th>
+                    <th>Inventario</th>
+                    <th>Azioni</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="prodotto : ${prodotti.content}">
+                    <td th:text="${prodotto.nomeProdotto}">Nome</td>
+                    <td th:text="${prodotto.categorie?.nomeCategorie}">Categoria</td>
+                    <td th:text="${#numbers.formatCurrency(prodotto.prezzo)}">Prezzo</td>
+                    <td th:text="${prodotto.inventario}">Inventario</td>
+                    <td>
+                        <a th:href="@{/admin/prodotti/update/{id}(id=${prodotto.id})}">Modifica</a>
+                        <a th:href="@{/admin/prodotti/delete(id=${prodotto.id})}" onclick="return confirm('Sei sicuro di voler eliminare questo prodotto?')">Elimina</a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div th:if="${prodotti.totalPages > 1}">
+            <span>Pagine:</span>
+            <a th:each="pageNumber : ${#numbers.sequence(1, prodotti.totalPages)}"
+               th:href="@{/admin/prodotti(page=${pageNumber - 1}, size=${prodotti.size}, search=${search})}"
+               th:text="${pageNumber}"
+               th:class="${pageNumber == prodotti.number + 1 ? 'active' : ''}"></a>
+        </div>
+    </div>
+
+    <p><a th:href="@{/admin/dashboard}">Torna alla Dashboard</a></p>
+</body>
+</html>

@@ -1,19 +1,39 @@
 <!DOCTYPE html>
-<html>
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Lista Prodotti</title>
 </head>
 <body>
-    <h1>Lista Prodotti</h1>
-    <ul>
-        <li th:each="prodotto : ${products}">
-            <span th:text="${prodotto.nome}">Nome</span> - 
-            €<span th:text="${prodotto.prezzo}">Prezzo</span>
-            <form method="post" th:action="@{/carrelloProdotti/aggiungi}">
-                <input type="hidden" name="idProdotto" th:value="${prodotto.id}"/>
-                <button type="submit">Aggiungi al carrello</button>
-            </form>
-        </li>
-    </ul>
+    <h1>Lista dei Prodotti</h1>
+
+    <div th:if="${products == null or products.isEmpty()}">
+        <p>Non ci sono prodotti disponibili.</p>
+    </div>
+    <div th:unless="${products == null or products.isEmpty()}">
+        <table>
+            <thead>
+                <tr>
+                    <th>Nome</th>
+                    <th>Brand</th>
+                    <th>Prezzo</th>
+                    <th>Inventario</th>
+                    <th>Azioni</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="prodotto : ${products}">
+                    <td th:text="${prodotto.nomeProdotto}">Nome</td>
+                    <td th:text="${prodotto.brand}">Brand</td>
+                    <td th:text="${#numbers.formatCurrency(prodotto.prezzo)}">Prezzo</td>
+                    <td th:text="${prodotto.inventario}">Inventario</td>
+                    <td>
+                        <a th:href="@{/prodotto/{id}(id=${prodotto.id})}">Dettagli</a>
+                        </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <p><a th:href="@{/utente/dashboard}">Torna alla Dashboard</a></p>
 </body>
 </html>
