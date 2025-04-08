@@ -1,26 +1,19 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html>
 <head>
-    <title>Catalogo Prodotti</title>
-    <meta charset="UTF-8">
+    <title>Lista Prodotti</title>
 </head>
 <body>
-<h2>Catalogo Prodotti</h2>
-
-<nav>
-    <a th:href="@{/carrello}">Vai al Carrello</a> |
-    <a th:href="@{/logout}">Logout</a>
-</nav>
-
-<div th:each="prodotto : ${prodotti}">
-    <h3 th:text="${prodotto.nome}">Nome prodotto</h3>
-    <p th:text="'Categoria: ' + ${prodotto.categoria.nome}"></p>
-    <p th:text="'Prezzo: €' + ${prodotto.prezzo}"></p>
-    <form th:action="@{/carrello/add}" method="post">
-        <input type="hidden" name="prodottoId" th:value="${prodotto.id}" />
-        <button type="submit">Aggiungi al carrello</button>
-    </form>
-    <hr/>
-</div>
+    <h1>Lista Prodotti</h1>
+    <ul>
+        <li th:each="prodotto : ${products}">
+            <span th:text="${prodotto.nome}">Nome</span> - 
+            €<span th:text="${prodotto.prezzo}">Prezzo</span>
+            <form method="post" th:action="@{/carrelloProdotti/aggiungi}">
+                <input type="hidden" name="idProdotto" th:value="${prodotto.id}"/>
+                <button type="submit">Aggiungi al carrello</button>
+            </form>
+        </li>
+    </ul>
 </body>
 </html>

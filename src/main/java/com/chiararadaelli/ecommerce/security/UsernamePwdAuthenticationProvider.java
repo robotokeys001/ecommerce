@@ -35,10 +35,10 @@ public class UsernamePwdAuthenticationProvider
     public Authentication authenticate(Authentication authentication)
             throws AuthenticationException {
         String email = authentication.getName();
-        String pwd = authentication.getCredentials().toString();
+        String password = authentication.getCredentials().toString();
         Utenti utente = utentiService.readByEmail(email);
         if(null != utente && utente.getUtentiId()>0 &&
-                passwordEncoder.matches(pwd,utente.getPassword())){
+                passwordEncoder.matches(password, utente.getPassword())){
             return new UsernamePasswordAuthenticationToken(
                     email, null, getGrantedAuthorities(utente.getRuoli()));
         }else{
@@ -56,5 +56,6 @@ public class UsernamePwdAuthenticationProvider
     public boolean supports(Class<?> authentication) {
         return authentication.equals(UsernamePasswordAuthenticationToken.class);
     }
+    
 }
 

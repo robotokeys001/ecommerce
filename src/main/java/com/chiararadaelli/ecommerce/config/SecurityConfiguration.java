@@ -9,8 +9,7 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
+
 import org.springframework.security.web.SecurityFilterChain;
 
 import com.chiararadaelli.ecommerce.costanti.Costanti;
@@ -23,11 +22,17 @@ import com.chiararadaelli.ecommerce.service.UtentiService;
 @Configuration
 public class SecurityConfiguration {
 
+    private final CustomSuccessHandler customSuccessHandler;
+
     @Autowired
     private UtentiService utentiService;
 
     @Autowired
     private UsernamePwdAuthenticationProvider authProvider;
+
+    SecurityConfiguration(CustomSuccessHandler customSuccessHandler) {
+        this.customSuccessHandler = customSuccessHandler;
+    }
 
     @Bean
     @Order(1) // Aggiungi anche @Order(1) per garantire la precedenza
@@ -36,10 +41,12 @@ public class SecurityConfiguration {
             .securityMatcher("/admin/**")
             .authorizeHttpRequests(authz -> authz
                 .requestMatchers("/admin/**").hasRole("ADMIN")
-                .anyRequest().authenticated()
+                .anyRequest().authenticated(
+                    
+                )
             )
-            .authenticationManager(authManager) // ✅ authManager passato correttamente ora
-            .httpBasic(basic ->basic.disable()) // oppure puoi disabilitare se non vuoi basic auth
+            .authenticationManager(authManager)
+            .httpBasic(basic ->basic.disable()) 
             .csrf(csrf -> csrf.disable());
     
         return http.build();
@@ -50,12 +57,13 @@ public class SecurityConfiguration {
     SecurityFilterChain userFilterChain(HttpSecurity http) throws Exception {
         http
             .authorizeHttpRequests(authz -> authz
-                .requestMatchers("/", "/home", "/public/**", "/login", "/register").permitAll()
+                .requestMatchers("/", "/home", "/public/**", "/login", "/registrazione").permitAll()
                 .requestMatchers("/utente/**", "/carrello/**").hasRole("UTENTE")
                 .anyRequest().authenticated()
             )
             .formLogin(form -> form
                 .loginPage("/login")
+                .successHandler(customSuccessHandler)
                 .defaultSuccessUrl("/utente/", true)
                 .failureUrl("/login?error=true")
                 .permitAll()
@@ -85,7 +93,7 @@ public class SecurityConfiguration {
             }
             String role = Costanti.ADMIN_ROLE.equals(utente.getRuoli().getNomeRuolo()) ? "ADMIN" : "UTENTE";
             return org.springframework.security.core.userdetails.User
-                    .withUsername(username)
+                    .withUsername(utente.getEmail())
                     .password(utente.getPassword())
                     .roles(role)
                     .build();

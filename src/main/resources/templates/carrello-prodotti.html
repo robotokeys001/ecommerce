@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Gestione Prodotti Carrello</title>
+</head>
+<body>
+    <h1>Prodotti nel Carrello</h1>
+    <ul>
+        <li th:each="cp : ${carrelloProdotti}">
+            <span th:text="${cp.prodotto.nome}">Nome prodotto</span>
+            - Quantità: <span th:text="${cp.quantita}">1</span>
+            <form th:action="@{'/carrelloProdotti/elimina/' + ${cp.id}}" method="post">
+                <button type="submit">Rimuovi</button>
+            </form>
+        </li>
+    </ul>
+</body>
+</html>

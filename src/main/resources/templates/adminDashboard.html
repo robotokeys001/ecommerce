@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard Admin</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <h1>Benvenuto, <span th:text="${admin.nome}">Admin</span> 👑</h1>
+
+    <p>Hai accesso completo alla gestione dell'e-commerce.</p>
+
+    <div>
+        <p>Numero totale utenti: <strong th:text="${numeroUtenti}">0</strong></p>
+        <p>Numero totale prodotti: <strong th:text="${numeroProdotti}">0</strong></p>
+    </div>
+
+    <nav>
+        <ul>
+            <li><a href="/admin/prodotti">Gestione Prodotti</a></li>
+            <li><a href="/admin/ordini">Gestione Ordini</a></li>
+            <li><a href="/logout">Logout</a></li>
+        </ul>
+    </nav>
+</body>
+</html>

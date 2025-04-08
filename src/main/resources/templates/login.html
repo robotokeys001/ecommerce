@@ -7,7 +7,8 @@
 <body>
 <h2>Login</h2>
 
-<div th:if="${error}" style="color: red;">[[${error}]]</div>
+<div th:if="${errorMessage}" style="color: red;">[[${errorMessage}]]</div>
+
 <div th:if="${msg}" style="color: green;">[[${msg}]]</div>
 
 <form th:action="@{/login}" method="post">

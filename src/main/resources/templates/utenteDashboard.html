@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard Utente</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <h1>Ciao, <span th:text="${utente.nome}">Utente</span> 👋</h1>
+
+    <p>Benvenuto nella tua area personale. Ecco cosa puoi fare:</p>
+
+    <ul>
+        <li><a href="/prodotti">Naviga tra i prodotti</a></li>
+        <li><a href="/carrello">Visualizza il tuo carrello</a></li>
+        <li><a href="/utente/ordini">Storico Ordini</a></li>
+        <li><a href="/logout">Logout</a></li>
+    </ul>
+
+    <div>
+        <h3>Prodotti consigliati:</h3>
+        <ul>
+            <li th:each="prodotto : ${prodottiConsigliati}">
+                <span th:text="${prodotto.nome}">Nome prodotto</span> - 
+                <span th:text="${prodotto.prezzo}">€0.00</span>
+            </li>
+        </ul>
+    </div>
+</body>
+</html>

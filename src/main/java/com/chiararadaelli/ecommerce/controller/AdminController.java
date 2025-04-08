@@ -1,5 +1,6 @@
 package com.chiararadaelli.ecommerce.controller;
 
+import java.io.File;
 import java.math.BigDecimal;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +43,11 @@ public class AdminController {
     @Autowired
     private CategorieService categorieService;
 
+    @GetMapping("/dashboard")
+    public String dashboard() {
+        return "adminDashboard"; // nome della view (es: adminDashboard.html)
+    }
+
 
 /*------------------------gestione categorie-------------------------- */
     @GetMapping("/categorie")
@@ -63,10 +69,11 @@ public String addCategoria(@RequestParam("nomecategoria") String nome, RedirectA
         log.error("Errore durante l'aggiunta della categoria", e);
         redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
     }
-    return "redirect:categorie";
+     return "redirect:/admin/categorie";
+    
 }
 
-@GetMapping("categorie/update")
+@GetMapping("/categorie/update")
 public String updateCategory(@RequestParam("categoryid") Long id, @RequestParam("nome") String nome, RedirectAttributes redirectAttributes) {
     try {
         Categorie categoriaAggiornata = new Categorie();
@@ -81,7 +88,7 @@ public String updateCategory(@RequestParam("categoryid") Long id, @RequestParam(
     return "redirect:/admin/categorie";
 }
 
-@GetMapping("categorie/delete")
+@GetMapping("/categorie/delete")
 public String deleteCategoria(@RequestParam("id") Long id, RedirectAttributes redirectAttributes) {
     try {
         categorieService.deleteCategoria(id);
@@ -170,26 +177,37 @@ public ModelAndView getProducts(
         return mView;
     }
 /*-------------------------crea prodotti------------------------------------- */
-    @PostMapping("/prodotti/add")
-    public String addProduct(
-            @RequestParam("nome") String nomeProdotto,
-            @RequestParam("categoriaid") Long categorieId,
-            @RequestParam("price") BigDecimal prezzo,
-            @RequestParam("quantita") int quantita,
-            @RequestParam("descrizione") String descrizzione,
-            @RequestParam("immagine") MultipartFile immagine,
-            RedirectAttributes redirectAttributes) {
-    
-        try {
-            prodottiService.createProdottoWithImage(
-                    nomeProdotto, categorieId, prezzo, quantita, descrizzione, immagine
-            );
-            redirectAttributes.addFlashAttribute("successMessage", "Prodotto aggiunto con successo.");
-        } catch (Exception e) {
-            log.error("Errore durante l'aggiunta del prodotto", e);
-            redirectAttributes.addFlashAttribute("errorMessage", "Errore durante l'aggiunta del prodotto.");
+@PostMapping("/prodotti/add")
+public String addProduct(
+        @RequestParam("nome") String nomeProdotto,
+        @RequestParam("categoriaid") Long categorieId,
+        @RequestParam("price") BigDecimal prezzo,
+        @RequestParam("quantita") int quantita,
+        @RequestParam("descrizione") String descrizione,
+        @RequestParam("immagine") MultipartFile immagine,
+        RedirectAttributes redirectAttributes) {
+
+    try {
+        String uploadDir = "src/main/resources/static/uploads/";
+        String fileName = System.currentTimeMillis() + "_" + immagine.getOriginalFilename();
+        File uploadPath = new File(uploadDir);
+        if (!uploadPath.exists()) {
+            uploadPath.mkdirs(); // crea la cartella se non esiste
         }
-    
-        return "redirect:/admin/prodotti";
+
+        File filePath = new File(uploadDir + fileName);
+        immagine.transferTo(filePath); // salva il file fisicamente
+
+        prodottiService.createProdotto(
+                nomeProdotto, categorieId, prezzo, quantita, descrizione, fileName // salva solo il nome nel DB
+        );
+
+        redirectAttributes.addFlashAttribute("successMessage", "Prodotto aggiunto con successo.");
+    } catch (Exception e) {
+        log.error("Errore durante l'aggiunta del prodotto", e);
+        redirectAttributes.addFlashAttribute("errorMessage", "Errore durante l'aggiunta del prodotto.");
     }
+
+    return "redirect:/admin/prodotti";
+}
 }

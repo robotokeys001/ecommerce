@@ -171,9 +171,29 @@ public Prodotti createProdottoWithImage(
     }
 
     public List<Prodotti> findAll() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'findAll'");
+        return prodottiRepository.findAll();
     }
+            
+
+            public void createProdotto(String nomeProdotto, Long categorieId, BigDecimal prezzo, int quantita,
+            String descrizione, String fileName) {
+
+        Prodotti prodotto = new Prodotti();
+        prodotto.setNomeProdotto(nomeProdotto);
+        prodotto.setDescrizione(descrizione);
+        prodotto.setPrezzo(prezzo);
+        prodotto.setInventario(quantita);
+        prodotto.setImmagine(fileName); // Salva il nome del file dell'immagine
+
+        Categorie categoria = categorieService.getCategoriaById(categorieId);
+        if (categoria == null) {
+            throw new IllegalArgumentException("Categoria non trovata con ID: " + categorieId);
+        }
+        prodotto.setCategorie(categoria);
+
+        prodottiRepository.save(prodotto);
+        }
+
 
     
 }

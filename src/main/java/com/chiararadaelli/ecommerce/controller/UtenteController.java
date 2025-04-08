@@ -37,6 +37,12 @@ public class UtenteController {
     @Autowired
     RuoliService ruoliService; // Assicurati che RuoliRepository sia autowired
 
+
+    @GetMapping("/dashboard")
+    public String dashboard() {
+        return "utenteDashboard"; // nome della view (es: utenteDashboard.html)
+    }
+
     @GetMapping("/displayCarrello")
     public ModelAndView displayCarrello(Model model, HttpSession session) {
         Utenti utente = (Utenti) session.getAttribute("loggedInPerson");
@@ -77,6 +83,12 @@ public String aggiornaProfilo(@ModelAttribute("utente") Utenti utenteModificato,
     redirectAttributes.addFlashAttribute("messaggio", "Profilo aggiornato con successo!");
     return "redirect:/utente/home";
 }
-
+    @GetMapping("/lista-prodotti")
+    public ModelAndView mostraListaProdotti() {
+        List<Prodotti> prodotti = prodottiService.findAll();
+        ModelAndView mv = new ModelAndView("listaprodotti.html");
+        mv.addObject("products", prodotti);
+        return mv;
+}
 
 }
