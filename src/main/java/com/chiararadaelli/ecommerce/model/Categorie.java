@@ -2,6 +2,7 @@ package com.chiararadaelli.ecommerce.model;
 
 import java.util.List;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -15,22 +16,17 @@ import lombok.Data;
 @Table(name = "categorie")
 public class Categorie {
 
-    public Categorie(){
-        this.categorieId= categorieId;
-        this.nomeCategorie= nomeCategorie;
-    }
-
+   
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "categorie_id")
     private Long categorieId;
 
+    @Column(name = "nome_categorie")
     private String nomeCategorie;
 
     @OneToMany(mappedBy = "categorie")
     private List<Prodotti> prodotti;
 
-    public Categorie orElse(Object object) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'orElse'");
-    }
+    
 }

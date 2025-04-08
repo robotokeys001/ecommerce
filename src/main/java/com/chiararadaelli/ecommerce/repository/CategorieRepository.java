@@ -6,10 +6,9 @@ import org.springframework.stereotype.Repository;
 import com.chiararadaelli.ecommerce.model.Categorie;
 
 @Repository
-public interface CategorieRepository  extends JpaRepository<Categorie, Long>{
+public interface CategorieRepository extends JpaRepository<Categorie, Long> {
 
-    Categorie getCategoriaByNome(String nomeCategorie);
+    Categorie findByNomeCategorie(String nomeCategorie); // Corretto per corrispondere al nome del campo nell'entità
 
-    Object findByNomeCategorie(String nomeCategorie);
     
-} 
+}

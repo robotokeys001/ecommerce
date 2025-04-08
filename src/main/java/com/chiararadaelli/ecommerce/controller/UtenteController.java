@@ -1,5 +1,6 @@
 package com.chiararadaelli.ecommerce.controller;
 
+import java.security.Principal;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,8 +8,12 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
 import com.chiararadaelli.ecommerce.model.Prodotti;
 import com.chiararadaelli.ecommerce.model.Utenti;
 import com.chiararadaelli.ecommerce.service.ProdottiService;
@@ -55,5 +60,23 @@ public class UtenteController {
         return mView;
     }
    
-   
+   @GetMapping("/modifica-profilo")
+public String mostraFormProfilo(Model model, Principal principal) {
+    Utenti utente = utentiService.readByEmail(principal.getName());
+    model.addAttribute("utente", utente);
+    return "utente/modifica_profilo";
+}
+@PostMapping("/modifica-profilo")
+public String aggiornaProfilo(@ModelAttribute("utente") Utenti utenteModificato, Principal principal, RedirectAttributes redirectAttributes) {
+    Utenti utente = utentiService.readByEmail(principal.getName());
+
+    utente.setNome(utenteModificato.getNome());
+    utente.setEmail(utenteModificato.getEmail());
+
+    utentiService.salvaUtente(utente);
+    redirectAttributes.addFlashAttribute("messaggio", "Profilo aggiornato con successo!");
+    return "redirect:/utente/home";
+}
+
+
 }

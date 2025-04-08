@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Carrello</title>
+    <meta charset="UTF-8">
+</head>
+<body>
+<h2>Il tuo carrello</h2>
+
+<table>
+    <tr>
+        <th>Prodotto</th>
+        <th>Quantità</th>
+        <th>Prezzo</th>
+        <th>Totale</th>
+    </tr>
+    <tr th:each="item : ${carrello.prodotti}">
+        <td th:text="${item.prodotto.nome}"></td>
+        <td th:text="${item.quantita}"></td>
+        <td th:text="${item.prodotto.prezzo}"></td>
+        <td th:text="${item.quantita * item.prodotto.prezzo}"></td>
+    </tr>
+</table>
+
+<p><strong>Totale: € <span th:text="${carrelloTotale}">0.00</span></strong></p>
+
+<form th:action="@{/carrello/checkout}" method="post">
+    <button type="submit">Procedi al pagamento</button>
+</form>
+
+<a th:href="@{/prodotti}">Torna al catalogo</a>
+</body>
+</html>

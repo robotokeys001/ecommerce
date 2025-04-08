@@ -1,12 +1,12 @@
 package com.chiararadaelli.ecommerce.service;
 
 import java.util.List;
-import java.util.Optional;
+
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.chiararadaelli.ecommerce.model.Categorie;
-import com.chiararadaelli.ecommerce.model.Prodotti;
+
 import com.chiararadaelli.ecommerce.repository.CategorieRepository;
 
 import jakarta.transaction.Transactional;
@@ -40,35 +40,26 @@ public class CategorieService {
         }
     }
 
-    public Categorie getCategoriaById(Long categorieId) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getCategoriaById'");
+    public void updateCategoria(Categorie categoriaAggiornata) {
+        categorieRepository.save(categoriaAggiornata);
     }
+    
 
     public List<Categorie> getAllCategorie() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getAllCategorie'");
+        return categorieRepository.findAll();
     }
+    
+    public void deleteCategoria(Long id) {
+        categorieRepository.deleteById(id);
+    }
+    
+   
 
-    public void updateCategorie(Long id, Categorie categorie) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'updateCategorie'");
+    public Categorie getCategoriaById(Long categorieId) {
+        return categorieRepository.findById(categorieId)
+                .orElseThrow(() -> new RuntimeException("Categoria non trovata con ID: " + categorieId));
     }
-
-    public void updateCategoria(Categorie categoriaAggiornata) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'updateCategoria'");
-    }
-
-    public List<Categorie> findAll() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'findAll'");
-    }
-
-    public Optional<Prodotti> findById(Long categorieId) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'findById'");
-    }
+    
 
     // ... altri metodi per recuperare, aggiornare, eliminare categorie
 }

@@ -11,7 +11,7 @@ import lombok.Data;
 
 @Entity
 @Data
-@Table(name= "cart_items")
+@Table(name= "carrello_prodotti")
 public class CarrelloProdotti {
     
     @Id

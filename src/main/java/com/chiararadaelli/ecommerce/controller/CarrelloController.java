@@ -42,7 +42,7 @@ public class CarrelloController {
         return modelAndView;
     }
 
-    @PostMapping("/carrello/aggiungi")
+    @PostMapping("/carrello/aggiungi-prodotto")
     public ResponseEntity<String> aggiungiProdottoAlCarrello(@RequestParam("prodottoId") Long prodottoId, @RequestParam("quantita") int quantita) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null && authentication.getPrincipal() instanceof Utenti) {
@@ -54,7 +54,7 @@ public class CarrelloController {
         }
     }
 
-    @DeleteMapping("/carrello/rimuovi/{prodottoId}")
+    @DeleteMapping("/carrello/rimuovi-dal-carrello/{prodottoId}")
     public ResponseEntity<String> rimuoviProdottoDalCarrello(@PathVariable Long prodottoId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null && authentication.getPrincipal() instanceof Utenti) {
@@ -66,7 +66,7 @@ public class CarrelloController {
         }
     }
 
-    @PutMapping("/carrello/aggiorna")
+    @PutMapping("/carrello/aggiorna-quantita")
     public ResponseEntity<String> aggiornaQuantitaCarrello(@RequestParam("prodottoId") Long prodottoId, @RequestParam("quantita") int quantita) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null && authentication.getPrincipal() instanceof Utenti) {

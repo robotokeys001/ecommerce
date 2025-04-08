@@ -28,15 +28,15 @@ public class Prodotti {
 
     private String brand;
 
-    private String descrizzione;
+    private String descrizione;
 
     private int inventario;
 
     private BigDecimal prezzo;
 
     private String immagine;
-
+    
     @ManyToOne(fetch = FetchType.EAGER,cascade = CascadeType.PERSIST, targetEntity = Categorie.class)
-    @JoinColumn(name = "categorie_id", referencedColumnName = "categorieId",nullable = false)
+    @JoinColumn(name = "categorie_id", nullable = false) // <--- Usa il nome corretto della colonna
     private Categorie categorie;
 }

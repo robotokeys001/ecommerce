@@ -24,78 +24,73 @@ import com.chiararadaelli.ecommerce.service.UtentiService;
 public class SecurityConfiguration {
 
     @Autowired
-    UtentiService utentiService; // Utilizza UtentiService
-
-    @Bean
-    SecurityFilterChain adminFilterChain(HttpSecurity http) throws Exception {
-        http
-                .securityMatcher("/admin/**") // Applica questa catena solo agli URL che iniziano con /admin/
-                .authorizeHttpRequests((authz) -> authz
-                                .requestMatchers("/admin/**").hasRole("ADMIN")
-                                .anyRequest().authenticated()
-                )
-                .httpBasic(basic -> basic.configure(http)) // O formLogin
-                        .csrf(csrf -> csrf.disable()); // Rimuovi in produzione
-        return http.build();
-    }
-    
-    
-
-    @Bean
-    @Order(2)
-    SecurityFilterChain userFilterChain(HttpSecurity http) throws Exception {
-        http
-            .authorizeHttpRequests((authz) -> authz
-                .requestMatchers("/", "/home", "/public/**", "/login", "/register").permitAll() // Accesso pubblico
-                .requestMatchers("/utente/**", "/carrello/**").hasRole("UTENTE")
-                .anyRequest().authenticated()
-            )
-            .formLogin(form -> form
-                .loginPage("/login")
-                .permitAll()
-                .defaultSuccessUrl("/utente/", true)
-                .failureUrl("/login?error=true")
-            )
-            .logout(logout -> logout
-                .logoutUrl("/logout")
-                .permitAll()
-                .logoutSuccessUrl("/login?logout=true")
-            )
-            .csrf(csrf -> csrf.disable()); // Rimuovi in produzione
-        return http.build();
-    }
-
-    @Bean
-    UserDetailsService userDetailsService() {
-        return username -> {
-            Utenti utente = utentiService.findByNome(username); // Utilizza UtentiService
-            if (utente == null) {
-                throw new UsernameNotFoundException("User with username " + username + " not found.");
-            }
-           String role = utente.getRuoli().getNomeRuolo().equals(Costanti.ADMIN_ROLE) ? "ADMIN" : "UTENTE";
-           return org.springframework.security.core.userdetails.User
-        .withUsername(username)
-        .password(utente.getPassword())
-        .roles(role)
-        .build();
-        };
-    }
-
+    private UtentiService utentiService;
 
     @Autowired
     private UsernamePwdAuthenticationProvider authProvider;
 
     @Bean
-    public AuthenticationManager authManager(HttpSecurity http) throws Exception {
-        AuthenticationManagerBuilder authenticationManagerBuilder =
-            http.getSharedObject(AuthenticationManagerBuilder.class);
-        authenticationManagerBuilder.authenticationProvider(authProvider);
-        return authenticationManagerBuilder.build();
+    @Order(1) // Aggiungi anche @Order(1) per garantire la precedenza
+    SecurityFilterChain adminFilterChain(HttpSecurity http, AuthenticationManager authManager) throws Exception {
+        http
+            .securityMatcher("/admin/**")
+            .authorizeHttpRequests(authz -> authz
+                .requestMatchers("/admin/**").hasRole("ADMIN")
+                .anyRequest().authenticated()
+            )
+            .authenticationManager(authManager) // ✅ authManager passato correttamente ora
+            .httpBasic(basic ->basic.disable()) // oppure puoi disabilitare se non vuoi basic auth
+            .csrf(csrf -> csrf.disable());
+    
+        return http.build();
     }
-
 
     @Bean
-    PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
+    @Order(2)
+    SecurityFilterChain userFilterChain(HttpSecurity http) throws Exception {
+        http
+            .authorizeHttpRequests(authz -> authz
+                .requestMatchers("/", "/home", "/public/**", "/login", "/register").permitAll()
+                .requestMatchers("/utente/**", "/carrello/**").hasRole("UTENTE")
+                .anyRequest().authenticated()
+            )
+            .formLogin(form -> form
+                .loginPage("/login")
+                .defaultSuccessUrl("/utente/", true)
+                .failureUrl("/login?error=true")
+                .permitAll()
+            )
+            .logout(logout -> logout
+                .logoutUrl("/logout")
+                .logoutSuccessUrl("/login?logout=true")
+                .permitAll()
+            )
+            .csrf(csrf -> csrf.disable());
+        return http.build();
     }
+
+    @Bean
+    public AuthenticationManager authManager(HttpSecurity http) throws Exception {
+        AuthenticationManagerBuilder builder = http.getSharedObject(AuthenticationManagerBuilder.class);
+        builder.authenticationProvider(authProvider);
+        return builder.build();
+    }
+
+    @Bean
+    public UserDetailsService userDetailsService() {
+        return username -> {
+            Utenti utente = utentiService.findByNome(username);
+            if (utente == null) {
+                throw new UsernameNotFoundException("User not found");
+            }
+            String role = Costanti.ADMIN_ROLE.equals(utente.getRuoli().getNomeRuolo()) ? "ADMIN" : "UTENTE";
+            return org.springframework.security.core.userdetails.User
+                    .withUsername(username)
+                    .password(utente.getPassword())
+                    .roles(role)
+                    .build();
+        };
+    }
+
+   
 }

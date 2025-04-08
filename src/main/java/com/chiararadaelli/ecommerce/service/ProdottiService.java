@@ -97,7 +97,7 @@ public class ProdottiService {
             Prodotti prodotto = prodottoEsistente.get();
             prodotto.setNomeProdotto(prodottoAggiornato.getNomeProdotto());
             prodotto.setBrand(prodottoAggiornato.getBrand());
-            prodotto.setDescrizzione(prodottoAggiornato.getDescrizzione());
+            prodotto.setDescrizione(prodottoAggiornato.getDescrizione());
             prodotto.setInventario(prodottoAggiornato.getInventario());
             prodotto.setPrezzo(prodottoAggiornato.getPrezzo());
             prodotto.setImmagine(prodottoAggiornato.getImmagine());
@@ -157,7 +157,7 @@ public Prodotti createProdottoWithImage(
         Prodotti prodotto = new Prodotti();
         prodotto.setNomeProdotto(nomeProdotto);
         prodotto.setCategorie(categoria);
-        prodotto.setDescrizzione(descrizzione);
+        prodotto.setDescrizione(descrizzione);
         prodotto.setPrezzo(prezzo);
         prodotto.setImmagine(filename);
         prodotto.setInventario(quantita);
@@ -174,4 +174,6 @@ public Prodotti createProdottoWithImage(
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'findAll'");
     }
+
+    
 }

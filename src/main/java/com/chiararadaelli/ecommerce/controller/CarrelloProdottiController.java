@@ -1,5 +1,6 @@
 package com.chiararadaelli.ecommerce.controller;
 
+import java.security.Principal;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,10 +17,14 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.chiararadaelli.ecommerce.model.Carrello;
 import com.chiararadaelli.ecommerce.model.Prodotti;
 import com.chiararadaelli.ecommerce.model.Utenti;
 import com.chiararadaelli.ecommerce.service.CarrelloProdottiService;
+import com.chiararadaelli.ecommerce.service.CarrelloService;
+import com.chiararadaelli.ecommerce.service.UtentiService;
 
 @Controller
 @RequestMapping("/carrello")
@@ -27,6 +32,12 @@ public class CarrelloProdottiController {
 
     @Autowired
     private CarrelloProdottiService carrelloProdottiService;
+
+    @Autowired
+    private CarrelloService carrelloService;
+
+    @Autowired
+    UtentiService utentiService;
 
     @PostMapping("/aggiungi")
     public ResponseEntity<String> aggiungiProdotto(@RequestBody Prodotti prodotto, @RequestParam int quantita) {
@@ -75,4 +86,15 @@ public class CarrelloProdottiController {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
     }
+    @DeleteMapping("/svuota")
+public String svuotaCarrello(Principal principal, RedirectAttributes redirectAttributes) {
+    String email = principal.getName();
+    Utenti utente = utentiService.readByEmail(email);
+    Carrello carrello = carrelloService.findByUtente(utente);
+    
+    carrelloService.svuotaCarrello(carrello);
+    
+    redirectAttributes.addFlashAttribute("messaggio", "Carrello svuotato con successo!");
+    return "redirect:/utente/carrello";
+}
 }

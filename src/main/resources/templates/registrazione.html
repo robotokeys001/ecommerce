@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Registrazione - eCommerce</title>
+    <meta charset="UTF-8">
+</head>
+<body>
+<h2>Registrati</h2>
+
+<form th:action="@{/registrazione}" th:object="${utente}" method="post">
+    <div th:if="${#fields.hasErrors('*')}" style="color: red;">
+        <p th:each="err : ${#fields.errors('*')}" th:text="${err}">Errore</p>
+    </div>
+
+    <label>Nome:</label>
+    <input type="text" th:field="*{nome}" required /><br/>
+
+    <label>Cognome:</label>
+    <input type="text" th:field="*{cognome}" required /><br/>
+
+    <label>Email:</label>
+    <input type="email" th:field="*{email}" required /><br/>
+
+    <label>Password:</label>
+    <input type="password" th:field="*{password}" required /><br/>
+
+    <button type="submit">Registrati</button>
+</form>
+
+<p>Hai già un account? <a th:href="@{/login}">Accedi</a></p>
+</body>
+</html>

@@ -22,11 +22,14 @@ import java.util.List;
 public class UsernamePwdAuthenticationProvider
         implements AuthenticationProvider
 {
-    @Autowired
-    private UtentiService utentiService;
+    private final UtentiService utentiService;
+    private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    private PasswordEncoder passwordEncoder;
+    public UsernamePwdAuthenticationProvider(UtentiService utentiService, PasswordEncoder passwordEncoder) {
+        this.utentiService = utentiService;
+        this.passwordEncoder = passwordEncoder;
+    }
 
     @Override
     public Authentication authenticate(Authentication authentication)

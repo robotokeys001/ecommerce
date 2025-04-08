@@ -1,95 +1,25 @@
 <!DOCTYPE html>
-<html xmlns="http://www.thymeleaf.org">
-  <head>
-    <meta charset="utf-8" />
-    <link rel="stylesheet" href="/style.css" />
-  </head>
-  <body>
-    <div class="login">
-      <div class="div">
-        <div class="loginform">
-            <form th:action="@{/login}" method="post">
-          <div class="text-wrapper">Login</div>
-          <div class="frame">
-            <div class="overlap-group"><div class="text-wrapper-2">
-                <input type="text" th:name="username" id="username" placeholder="Username" class="text-wrapper-2">
-            </div>
-            <li role="alert" th:if="${!#strings.isEmpty(errorMessage)}"
-                th:text="${errorMessage}"></li>
-        </div>
-          </div>
-          <div class="overlap-wrapper">
-            <div class="overlap"><div class="text-wrapper-3">
-                <input type="password" th:name="password" id="password" placeholder="Password" class="text-wrapper-3">
-            </div>
-        </div>
-          </div>
-          <div class="text-wrapper-4">password dimenticata?</div>
-          <div class="rectangle"></div>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Login - eCommerce</title>
+    <meta charset="UTF-8">
+</head>
+<body>
+<h2>Login</h2>
 
-          <div class="text-wrapper-5">
-            <a th:href="@{/public/register}">New user? </a>
-        </div>
+<div th:if="${error}" style="color: red;">[[${error}]]</div>
+<div th:if="${msg}" style="color: green;">[[${msg}]]</div>
 
-          <div class="text-wrapper-6">
-            <button>Log In</button >
-        </div>
-        </div>
-        <div class="nav-bar">
-          <div class="navigation">
-            <div class="frame-2">
-              <div class="frame-3">
-                <div class="text-wrapper-7">Contact Us</div>
-                <div class="text-wrapper-7">Login</div>
-                <div class="text-wrapper-7">About US</div>
-                <div class="text-wrapper-7">Home</div>
-              </div>
-              <div class="frame-4">
-                <img class="img" src="img/image.svg" />
-                <div class="text-wrapper-8">Search for products...</div>
-              </div>
-              <img class="frame-5" src="img/frame-2.svg" />
-              <div class="frame-wrapper"><img class="frame-6" src="img/frame.svg" /></div>
-            </div>
-          </div>
-        </div>
-        <footer class="footer">
-          <div class="overlap-2">
-            <div class="overlap-3">
-              <div class="text-wrapper-9">Company</div>
-              <div class="rectangle-2"></div>
-            </div>
-            <div class="overlap-4">
-              <div class="text-wrapper-9">Help</div>
-              <div class="rectangle-3"></div>
-            </div>
-            <div class="text-wrapper-10">About Us</div>
-            <div class="text-wrapper-11">Costumer Support</div>
-            <div class="text-wrapper-12">Contact Us</div>
-            <div class="text-wrapper-13">Shipping</div>
-            <div class="text-wrapper-14">Returns</div>
-            <div class="text-wrapper-15">Privacy Policy</div>
-          </div>
-          <div class="text-wrapper-16">FAQ</div>
-          <div class="text-wrapper-17">Account</div>
-          <div class="text-wrapper-18">Orders</div>
-          <div class="text-wrapper-19">Payments</div>
-          <div class="social">
-            <div class="element"><div class="logo-twitter"></div></div>
-            <div class="logo-fb-simple-wrapper"><div class="logo-fb-simple"></div></div>
-            <div class="logo-instagram-wrapper"><div class="logo-instagram"></div></div>
-            <div class="logo-github-wrapper"><div class="logo-github"></div></div>
-          </div>
-        </footer>
-        <div class="bred-crumb">
-          <div class="breadcrumb"><div class="text-wrapper-20">Home</div></div>
-          <div class="overlap-group-wrapper">
-            <div class="home-wrapper"><div class="home">Login</div></div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </body>
+<form th:action="@{/login}" method="post">
+    <label>Email:</label>
+    <input type="text" name="username" required /><br/>
+    
+    <label>Password:</label>
+    <input type="password" name="password" required /><br/>
+    
+    <button type="submit">Accedi</button>
+</form>
+
+<p>Non hai un account? <a th:href="@{/registrazione}">Registrati</a></p>
+</body>
 </html>
-
-

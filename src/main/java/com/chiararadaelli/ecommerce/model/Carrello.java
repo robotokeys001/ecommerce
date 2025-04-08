@@ -22,5 +22,5 @@ public class Carrello {
 
     @ManyToOne
     @JoinColumn(name="utenti_id")
-    private Utenti utenti;
+    private Utenti utente;
 }

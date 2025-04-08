@@ -31,8 +31,12 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping("/admin")
 public class AdminController {
 
+    private final UtentiService utentiService;
+
     @Autowired
-    private UtentiService utentiService;
+    public AdminController(UtentiService utentiService) {
+        this.utentiService = utentiService;
+    }
     @Autowired
     private ProdottiService prodottiService;
     @Autowired
@@ -42,7 +46,7 @@ public class AdminController {
 /*------------------------gestione categorie-------------------------- */
     @GetMapping("/categorie")
     public ModelAndView getcategoria() {
-        ModelAndView mView = new ModelAndView("categories");
+        ModelAndView mView = new ModelAndView("categorie");
         List<Categorie> categoria = categorieService.getAllCategorie();
         mView.addObject("categoria", categoria);
         return mView;
@@ -77,6 +81,18 @@ public String updateCategory(@RequestParam("categoryid") Long id, @RequestParam(
     return "redirect:/admin/categorie";
 }
 
+@GetMapping("categorie/delete")
+public String deleteCategoria(@RequestParam("id") Long id, RedirectAttributes redirectAttributes) {
+    try {
+        categorieService.deleteCategoria(id);
+        redirectAttributes.addFlashAttribute("successMessage", "Categoria eliminata con successo.");
+    } catch (Exception e) {
+        log.error("Errore durante l'eliminazione della categoria", e);
+        redirectAttributes.addFlashAttribute("errorMessage", "Errore durante l'eliminazione della categoria.");
+    }
+    return "redirect:/admin/categorie";
+}
+
 
 /*-----------------gestione prodotti-------------------------------------- */
 
@@ -88,7 +104,7 @@ public String updateCategory(@RequestParam("categoryid") Long id, @RequestParam(
         return mView;
     }
 
-    @GetMapping("products/update/{id}")
+    @GetMapping("prodotti/update/{id}")
     public ModelAndView updateprodotti(@PathVariable("id") Long id) {
         ModelAndView mView = new ModelAndView("productsUpdate");
         Prodotti prodotto = prodottiService.getProdottoById(id).orElse(null);
@@ -103,10 +119,10 @@ public String updateProduct(@PathVariable("id") Long id, @RequestParam("nome") S
     try{
         Prodotti prodotto = prodottiService.getProdottoById(id).orElse(null);
         if (prodotto != null) {
-            Categorie categoria = categorieService.getCategoriaById(categorieId).orElse(null);
+            Categorie categoria = categorieService.getCategoriaById(categorieId);
             prodotto.setNomeProdotto(nomeProdotto);
             prodotto.setCategorie(categoria);
-            prodotto.setDescrizzione(descrizzione);
+            prodotto.setDescrizione(descrizzione);
             prodotto.setPrezzo(prezzo);
             prodotto.setImmagine(immagini);
             prodotto.setInventario(quantita);
@@ -120,7 +136,7 @@ public String updateProduct(@PathVariable("id") Long id, @RequestParam("nome") S
     return "redirect:/admin/prodotti";
 }
 
-    @GetMapping("products/delete")
+    @GetMapping("prodotti/delete")
     public String removeProduct(@RequestParam("id") Long id, RedirectAttributes redirectAttributes) {
         try{
             prodottiService.deleteProdotto(id);
@@ -134,11 +150,11 @@ public String updateProduct(@PathVariable("id") Long id, @RequestParam("nome") S
 
 
     /*-----------------------gestione utenti------------------------------------ */
-    @GetMapping("customers")
+    @GetMapping("utenti")
     public ModelAndView getCustomerDetail() {
-        ModelAndView mView = new ModelAndView("displayCustomers");
+        ModelAndView mView = new ModelAndView("displayUtenti");
         List<Utenti> utenti = utentiService.getAllUtenti();
-        mView.addObject("customers", utenti);
+        mView.addObject("utenti", utenti);
         return mView;
     }
 /*-----------------------ricerca prodotti--------------------------------------- */
@@ -149,12 +165,12 @@ public ModelAndView getProducts(
 
     ModelAndView mView = new ModelAndView("prodotti");
         Page<Prodotti> prodotti = prodottiService.searchProdotti(search, null, null, null, null, pageable); // Adatta i parametri se necessario
-        mView.addObject("products", prodotti);
+        mView.addObject("prodotti", prodotti);
         mView.addObject("search", search);
         return mView;
     }
 /*-------------------------crea prodotti------------------------------------- */
-    @PostMapping("/products/add")
+    @PostMapping("/prodotti/add")
     public String addProduct(
             @RequestParam("nome") String nomeProdotto,
             @RequestParam("categoriaid") Long categorieId,

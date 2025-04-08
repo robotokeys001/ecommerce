@@ -1,6 +1,7 @@
 package com.chiararadaelli.ecommerce.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -18,15 +19,17 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 public class UtentiService {
     
-    @Autowired
-    private UtentiRepository utentiRepository;
+
+    private final UtentiRepository utentiRepository;
+    private final RuoliRepository ruoliRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    private RuoliRepository ruoliRepository;
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-
+    public UtentiService(UtentiRepository utentiRepository, RuoliRepository ruoliRepository, PasswordEncoder passwordEncoder) {
+        this.utentiRepository = utentiRepository;
+        this.ruoliRepository = ruoliRepository;
+        this.passwordEncoder = passwordEncoder;
+    }
     @Transactional
     public boolean createUser(Utenti utente) {
         try {
@@ -48,23 +51,36 @@ public class UtentiService {
     }
 
     public List<Utenti> getAllUtenti() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getAllUtenti'");
+        return utentiRepository.findAll();
     }
-
-    public Utenti readByEmail(String name) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'readByEmail'");
+    
+    public Utenti readByEmail(String email) {
+        Optional<Utenti> utente = utentiRepository.findByEmail(email);
+        return utente.orElse(null); // oppure lancia una custom exception se preferisci
     }
-
+    
     public Utenti findByNome(String username) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'findByNome'");
+        Optional<Utenti> utente = utentiRepository.findByNome(username);
+        return utente.orElse(null);
     }
-
+    
     public boolean existsByNome(String nome) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'existsByNome'");
+        return utentiRepository.existsByNome(nome);
+    }
+    public void salvaUtente(Utenti utente) {
+        // Controllo se l'utente è nuovo (senza ID) o esistente
+        boolean isNuovo = (utente.getUtentiId() == null);
+    
+        // Se la password è già cifrata o vuota, non ricifrare
+        if (isNuovo || utente.getPassword().length() < 60) { // BCrypt ha 60 caratteri
+            String encodedPassword = passwordEncoder.encode(utente.getPassword());
+            utente.setPassword(encodedPassword);
+        }
+        if (utentiRepository.existsByEmail(utente.getEmail())) {
+            throw new RuntimeException("Email già in uso");
+        }
+    
+        utentiRepository.save(utente);
     }
 
     // ... altri metodi

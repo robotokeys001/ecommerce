@@ -32,22 +32,22 @@ public class PublicController {
       @Autowired
     UtentiService utentiService;
 
-    @RequestMapping(value ="/register",method = { RequestMethod.GET})
+    @RequestMapping(value ="/registrazione",method = { RequestMethod.GET})
     public String displayRegisterPage(Model model) {
         model.addAttribute("utente", new Utenti());
-        return "register.html";
+        return "registrazione.html";
     }
 
     @RequestMapping(value ="/createUser",method = { RequestMethod.POST})
     public String createUser(@ModelAttribute("utente") Utenti utente, Errors errors) {
         if(errors.hasErrors()){
-            return "register.html";
+            return "registrazione.html";
         }
         boolean isSaved = utentiService.createUser(utente);
         if(isSaved){
             return "redirect:/login?register=true";
         }else {
-            return "register.html";
+            return "registrazione.html";
         }
     }
  @RequestMapping(value = "newuserregister", method = RequestMethod.POST)
