@@ -3,6 +3,8 @@ package com.chiararadaelli.ecommerce.model;
    
 import lombok.Data;
 
+import java.util.List;
+
 import jakarta.persistence.*;
 
 @Data
@@ -19,6 +21,8 @@ public class Ruoli {
     @Column(name = "nomeruolo")
     private String nomeRuolo;
 
+    @OneToMany(mappedBy = "ruoli")
+    private List<Utenti> utenti;
 }
 
 

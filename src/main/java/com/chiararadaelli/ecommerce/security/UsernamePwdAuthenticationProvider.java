@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 
 import com.chiararadaelli.ecommerce.model.Ruoli;
 import com.chiararadaelli.ecommerce.model.Utenti;
-import com.chiararadaelli.ecommerce.repository.UtentiRepository;
+import com.chiararadaelli.ecommerce.service.UtentiService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +23,7 @@ public class UsernamePwdAuthenticationProvider
         implements AuthenticationProvider
 {
     @Autowired
-    private UtentiRepository utentiRepository;
+    private UtentiService utentiService;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -33,7 +33,7 @@ public class UsernamePwdAuthenticationProvider
             throws AuthenticationException {
         String email = authentication.getName();
         String pwd = authentication.getCredentials().toString();
-        Utenti utente = utentiRepository.readByEmail(email);
+        Utenti utente = utentiService.readByEmail(email);
         if(null != utente && utente.getUtentiId()>0 &&
                 passwordEncoder.matches(pwd,utente.getPassword())){
             return new UsernamePasswordAuthenticationToken(
