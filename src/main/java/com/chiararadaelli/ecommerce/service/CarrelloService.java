@@ -49,8 +49,12 @@ public class CarrelloService {
     public Carrello findByUtente(Utenti utente) {
         return carrelloRepository.findByUtente(utente);
     }
+
+    public Carrello salvaCarrello(Carrello carrello) {
+        return carrelloRepository.save(carrello);
+    }
+
     
   
-    // Altri metodi per gestire il carrello (svuotamento, ecc.)
 }
 

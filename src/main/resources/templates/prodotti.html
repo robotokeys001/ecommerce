@@ -1,64 +1,281 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="it">
 <head>
-    <title>Gestione Prodotti</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestione Prodotti - Il Nostro Ecommerce (Admin)</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 20px;
+            background-color: #f4f4f4;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        h1 {
+            color: #dc3545; /* Un colore più admin-style */
+            margin-bottom: 20px;
+        }
+        .admin-panel {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            width: 95%;
+            max-width: 1400px;
+        }
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        .search-add-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .search-form {
+            display: flex;
+            align-items: center;
+        }
+        .search-form label {
+            margin-right: 10px;
+            font-weight: bold;
+            color: #555;
+        }
+        .search-form input[type="text"] {
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        .search-form button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+            margin-left: 10px;
+        }
+        .search-form button:hover {
+            background-color: #0056b3;
+        }
+        .add-button {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            text-decoration: none;
+            transition: background-color 0.3s ease;
+        }
+        .add-button:hover {
+            background-color: #218838;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: #fff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+        thead {
+            background-color: #dc3545;
+            color: white;
+            font-weight: bold;
+        }
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        tbody tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        tbody tr:hover {
+            background-color: #e9ecef;
+        }
+        td a {
+            color: #007bff;
+            text-decoration: none;
+            margin-right: 10px;
+            font-weight: bold;
+        }
+        td a:hover {
+            text-decoration: underline;
+        }
+        td a.delete-link {
+            color: #dc3545;
+        }
+        .pagination {
+            margin-top: 20px;
+            text-align: center;
+        }
+        .pagination span {
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        .pagination a {
+            display: inline-block;
+            padding: 8px 12px;
+            margin: 0 5px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            text-decoration: none;
+            color: #333;
+        }
+        .pagination a:hover {
+            background-color: #e9ecef;
+        }
+        .pagination a.active {
+            background-color: #007bff;
+            color: white;
+            border-color: #007bff;
+        }
+        .back-to-dashboard {
+            margin-top: 20px;
+            text-align: center;
+        }
+        .back-to-dashboard a {
+            color: #dc3545;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .back-to-dashboard a:hover {
+            text-decoration: underline;
+        }
+        .no-products {
+            color: #dc3545;
+            font-style: italic;
+            text-align: center;
+            padding: 15px;
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+        td img {
+            max-width: 80px;
+            height: auto;
+            display: block;
+            margin-right: 10px;
+            border-radius: 4px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        }
+        .product-row {
+            display: flex;
+            align-items: center;
+        }
+        .product-details {
+            flex-grow: 1;
+        }
+    
+.product-image:hover {
+    transform: scale(1.05);
+    transition: transform 0.2s ease-in-out;
+}
+.badge-available {
+    color: #28a745;
+    font-weight: bold;
+}
+.badge-unavailable {
+    color: #dc3545;
+    font-weight: bold;
+}
+</style>
 </head>
 <body>
-    <h1>Gestione Prodotti</h1>
+    <div class="admin-panel">
+        <h1>Gestione Prodotti</h1>
 
-    <div th:if="${successMessage}" class="success">
-        <p th:text="${successMessage}"></p>
-    </div>
-    <div th:if="${errorMessage}" class="error">
-        <p th:text="${errorMessage}"></p>
-    </div>
+        <div th:if="${successMessage}" class="success">
+            <p th:text="${successMessage}"></p>
+        </div>
+        <div th:if="${errorMessage}" class="error">
+            <p th:text="${errorMessage}"></p>
+        </div>
 
-    <div>
-        <form th:action="@{/admin/prodotti}" method="get">
-            <label for="search">Cerca Prodotto:</label>
-            <input type="text" id="search" name="search" th:value="${search}"/>
-            <button type="submit">Cerca</button>
-        </form>
-        <p><a th:href="@{/admin/prodotti/add}">Aggiungi Nuovo Prodotto</a></p>
-    </div>
+        <div class="search-add-container">
+            <form th:action="@{/admin/prodotti}" method="get" class="search-form">
+                <label for="search">Cerca Prodotto:</label>
+                <input type="text" id="search" name="search" th:value="${search}"/>
+                <button type="submit">Cerca</button>
+            </form>
+            <a th:href="@{/admin/prodotti/add}" class="add-button">Aggiungi Nuovo Prodotto</a>
+        </div>
 
-    <div th:if="${prodotti.content == null or prodotti.content.isEmpty()}">
-        <p>Nessun prodotto trovato.</p>
-    </div>
-    <div th:unless="${prodotti.content == null or prodotti.content.isEmpty()}">
-        <table>
-            <thead>
-                <tr>
-                    <th>Nome</th>
-                    <th>Categoria</th>
-                    <th>Prezzo</th>
-                    <th>Inventario</th>
-                    <th>Azioni</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr th:each="prodotto : ${prodotti.content}">
-                    <td th:text="${prodotto.nomeProdotto}">Nome</td>
-                    <td th:text="${prodotto.categorie?.nomeCategorie}">Categoria</td>
-                    <td th:text="${#numbers.formatCurrency(prodotto.prezzo)}">Prezzo</td>
-                    <td th:text="${prodotto.inventario}">Inventario</td>
-                    <td>
-                        <a th:href="@{/admin/prodotti/update/{id}(id=${prodotto.id})}">Modifica</a>
-                        <a th:href="@{/admin/prodotti/delete(id=${prodotto.id})}" onclick="return confirm('Sei sicuro di voler eliminare questo prodotto?')">Elimina</a>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+        <div th:if="${prodotti.content == null or prodotti.content.isEmpty()}" class="no-products">
+            <p>Nessun prodotto trovato.</p>
+        </div>
+        <div th:unless="${prodotti.content == null or prodotti.content.isEmpty()}">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Immagine</th>
+                        <th>Nome</th>
+                        <th>Categoria</th>
+                        <th>Prezzo</th>
+                        <th>Inventario</th>
+                        <th>Brand</th>
+                        <th>Azioni</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="prodotto : ${prodotti.content}">
+                        <td>
+                            <img th:if="${prodotto.immagine}" th:src="${prodotto.immagine}" alt="${prodotto.nomeProdotto}" />
+                            <span th:unless="${prodotto.immagine}">Nessuna immagine</span>
+                        </td>
+                        <td>
+                            <div class="product-details">
+                                <span th:text="${prodotto.nomeProdotto}">Nome</span>
+                            </div>
+                        </td>
+                        <td th:text="${prodotto.categorie?.nomeCategorie}">Categoria</td>
+                        <td th:text="${#numbers.formatCurrency(prodotto.prezzo)}">Prezzo</td>
+                        <td th:text="${prodotto.inventario}">Inventario</td>
+                        <td th:text="${prodotto.brand}">Brand</td>
+                        <td>
+                            <a th:href="@{/admin/prodotti/update/{id}(id=${prodotto.id})}">Modifica</a>
+                            <a th:href="@{/admin/prodotti/delete(id=${prodotto.id})}" class="delete-link" onclick="return confirm('Sei sicuro di voler eliminare questo prodotto?')">Elimina</a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
 
-        <div th:if="${prodotti.totalPages > 1}">
-            <span>Pagine:</span>
-            <a th:each="pageNumber : ${#numbers.sequence(1, prodotti.totalPages)}"
-               th:href="@{/admin/prodotti(page=${pageNumber - 1}, size=${prodotti.size}, search=${search})}"
-               th:text="${pageNumber}"
-               th:class="${pageNumber == prodotti.number + 1 ? 'active' : ''}"></a>
+            <div th:if="${prodotti.totalPages > 1}" class="pagination">
+                <span>Pagine:</span>
+                <a th:each="pageNumber : ${#numbers.sequence(1, prodotti.totalPages)}"
+                   th:href="@{/admin/prodotti(page=${pageNumber - 1}, size=${prodotti.size}, search=${search})}"
+                   th:text="${pageNumber}"
+                   th:class="${pageNumber == prodotti.number + 1 ? 'active' : ''}"></a>
+            </div>
+        </div>
+
+        <div class="back-to-dashboard">
+            <p><a th:href="@{/admin/dashboard}">Torna alla Dashboard</a></p>
         </div>
     </div>
-
-    <p><a th:href="@{/admin/dashboard}">Torna alla Dashboard</a></p>
 </body>
 </html>

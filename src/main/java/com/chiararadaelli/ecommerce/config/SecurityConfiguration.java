@@ -8,20 +8,15 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
-
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-import com.chiararadaelli.ecommerce.costanti.Costanti;
-import com.chiararadaelli.ecommerce.model.Utenti;
 import com.chiararadaelli.ecommerce.security.UsernamePwdAuthenticationProvider;
 import com.chiararadaelli.ecommerce.service.UtentiService;
 
-// ... (importazioni)
-
 @Configuration
-public class SecurityConfiguration {
+public class SecurityConfiguration implements WebMvcConfigurer { // <-- IMPORTANTE
 
     private final CustomSuccessHandler customSuccessHandler;
 
@@ -31,25 +26,23 @@ public class SecurityConfiguration {
     @Autowired
     private UsernamePwdAuthenticationProvider authProvider;
 
-    SecurityConfiguration(CustomSuccessHandler customSuccessHandler) {
+    public SecurityConfiguration(CustomSuccessHandler customSuccessHandler) {
         this.customSuccessHandler = customSuccessHandler;
     }
 
     @Bean
-    @Order(1) // Aggiungi anche @Order(1) per garantire la precedenza
+    @Order(1)
     SecurityFilterChain adminFilterChain(HttpSecurity http, AuthenticationManager authManager) throws Exception {
         http
             .securityMatcher("/admin/**")
             .authorizeHttpRequests(authz -> authz
                 .requestMatchers("/admin/**").hasRole("ADMIN")
-                .anyRequest().authenticated(
-                    
-                )
+                .anyRequest().authenticated()
             )
             .authenticationManager(authManager)
-            .httpBasic(Customizer.withDefaults()) 
+            .httpBasic(Customizer.withDefaults())
             .csrf(csrf -> csrf.disable());
-    
+
         return http.build();
     }
 
@@ -62,20 +55,20 @@ public class SecurityConfiguration {
                 .requestMatchers("/utente/**", "/carrello/**").hasRole("UTENTE")
                 .anyRequest().authenticated()
             )
-             .formLogin(form -> form
+            .formLogin(form -> form
                 .loginPage("/login")
                 .loginProcessingUrl("/login")
                 .successHandler(customSuccessHandler)
-            //     .defaultSuccessUrl("/utente/", true)
-               .failureUrl("/login?error=true")
-               .permitAll()
-             )
+                .failureUrl("/login?error=true")
+                .permitAll()
+            )
             .logout(logout -> logout
                 .logoutUrl("/logout")
                 .logoutSuccessUrl("/login?logout=true")
                 .permitAll()
             )
             .csrf(csrf -> csrf.disable());
+
         return http.build();
     }
 
@@ -86,22 +79,10 @@ public class SecurityConfiguration {
         return builder.build();
     }
 
-    // @Bean
-    // public UserDetailsService userDetailsService() {
-    //     return username -> {
-    //         Utenti utente = utentiService.findByEmail(username);
-    //         if (utente == null) {
-    //             throw new UsernameNotFoundException("User not found");
-    //         }
-    //         String role = Costanti.ADMIN_ROLE.equals(utente.getRuoli().getNomeRuolo()) ? "ROLE_ADMIN" : "ROLE_UTENTE";
-    //         return org.springframework.security.core.userdetails.User
-    //                 .withUsername(utente.getEmail())
-    //                 .password(utente.getPassword())
-    //                 .roles(role) // Spring Security aggiunge automaticamente il prefisso "ROLE_"
-    //                 .build();
-    //     };
-    // }
+    // Mappatura delle immagini caricate
+    @Override
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        registry.addResourceHandler("/uploads/**")
+                .addResourceLocations("file:./uploads/");
     }
-
-   
-
+}

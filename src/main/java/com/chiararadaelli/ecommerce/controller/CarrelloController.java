@@ -28,44 +28,78 @@ import com.chiararadaelli.ecommerce.service.CarrelloProdottiService;
 import com.chiararadaelli.ecommerce.service.CarrelloService;
 import com.chiararadaelli.ecommerce.service.UtentiService;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Controller
 @RequestMapping("/carrello")
 public class CarrelloController {
 
-    @Autowired
-    CarrelloProdottiService carrelloProdottiService;
+    private final CarrelloProdottiService carrelloProdottiService;
 
+    public CarrelloController(CarrelloProdottiService carrelloProdottiService) {
+        this.carrelloProdottiService = carrelloProdottiService;
+    }
     @Autowired
     CarrelloService carrelloService;
 
     @Autowired
     UtentiService utentiService;
 
-    @GetMapping("/display") // Modificato l'URL per evitare confusione con la visualizzazione API
-    public ModelAndView displayCarrelloView() {
-        ModelAndView modelAndView = new ModelAndView("carrello.html");
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    @GetMapping("/display")
+    public ModelAndView displayCarrelloView(Authentication authentication) {
+        ModelAndView modelAndView = new ModelAndView("carrello");
         if (authentication != null && authentication.getPrincipal() instanceof Utenti) {
             Utenti utente = (Utenti) authentication.getPrincipal();
+            log.info("CarrelloController - Utente autenticato: {}", utente.getEmail());
             List<CarrelloProdotti> carrelloItems = carrelloProdottiService.getCarrelloProdottiByUtente(utente);
+            log.info("CarrelloController - Numero di elementi nel carrello recuperati: {}", carrelloItems.size());
             modelAndView.addObject("carrelloItems", carrelloItems);
             modelAndView.addObject("utente", utente);
+        } else {
+            log.warn("CarrelloController - Utente non autenticato o Principal non è un'istanza di Utenti.");
         }
         return modelAndView;
     }
-
+    
+    // @PostMapping("/aggiungi")
+    // public ResponseEntity<String> aggiungiProdotto(@RequestBody Prodotti prodotto, @RequestParam int quantita) {
+    //     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    //     if (authentication != null && authentication.getPrincipal() instanceof Utenti) {
+    //         Utenti utente = (Utenti) authentication.getPrincipal();
+    //         carrelloProdottiService.aggiungiProdottoAlCarrello(utente, prodotto, quantita);
+    //         return new ResponseEntity<>("Prodotto aggiunto al carrello", HttpStatus.OK);
+    //     } else {
+    //         return new ResponseEntity<>("Utente non autenticato", HttpStatus.UNAUTHORIZED);
+    //     }
+    // }
     @PostMapping("/aggiungi")
-    public ResponseEntity<String> aggiungiProdotto(@RequestBody Prodotti prodotto, @RequestParam int quantita) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null && authentication.getPrincipal() instanceof Utenti) {
-            Utenti utente = (Utenti) authentication.getPrincipal();
-            carrelloProdottiService.aggiungiProdottoAlCarrello(utente, prodotto, quantita);
-            return new ResponseEntity<>("Prodotto aggiunto al carrello", HttpStatus.OK);
+    public String aggiungiProdotto(@RequestParam("prodottoId") Long prodottoId, @RequestParam("quantita") int inventario, Principal principal, RedirectAttributes redirectAttributes) {
+        log.info("Tentativo di aggiungere il prodotto con ID: {} e inventario: {}", prodottoId, inventario);
+        if (principal != null) {
+            String email = principal.getName();
+            log.info("Utente autenticato: {}", email);
+            Utenti utente = utentiService.readByEmail(email);
+            log.info("Utente trovato: {}", utente);
+            Prodotti prodottoDaAggiungere = carrelloProdottiService.getProdottoById(prodottoId);
+            log.info("Prodotto trovato: {}", prodottoDaAggiungere);
+    
+            if (prodottoDaAggiungere != null) {
+                carrelloProdottiService.aggiungiProdottoAlCarrello(utente, prodottoDaAggiungere, inventario);
+                log.info("Prodotto aggiunto al carrello.");
+                redirectAttributes.addFlashAttribute("messaggio", prodottoDaAggiungere.getNomeProdotto() + " aggiunto al carrello!");
+                return "redirect:/public/listaprodotti";
+            } else {
+                log.warn("Prodotto con ID {} non trovato.", prodottoId);
+                redirectAttributes.addFlashAttribute("errore", "Prodotto non trovato.");
+                return "redirect:/public/listaprodotti";
+            }
         } else {
-            return new ResponseEntity<>("Utente non autenticato", HttpStatus.UNAUTHORIZED);
+            log.warn("Utente non autenticato.");
+            redirectAttributes.addFlashAttribute("errore", "Utente non autenticato.");
+            return "redirect:/login";
         }
     }
-
     @GetMapping // URL base /carrello per visualizzare i prodotti nel carrello come API
     public ResponseEntity<List<Prodotti>> visualizzaCarrelloAPI() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();

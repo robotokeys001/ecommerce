@@ -137,8 +137,8 @@ public class ProdottiService {
 private final Path imageUploadPath = Paths.get("uploads"); // Dovresti configurare questo esternamente
     @Transactional
 public Prodotti createProdottoWithImage(
-        String nomeProdotto, Long categorieId, BigDecimal prezzo, int quantita,
-        String descrizzione, MultipartFile immagine) {
+        String nomeProdotto, Long categorieId,String brand, BigDecimal prezzo, int quantita,
+        String descrizione, MultipartFile immagine) {
 
     try {
         if (!Files.exists(imageUploadPath)) {
@@ -156,8 +156,9 @@ public Prodotti createProdottoWithImage(
 
         Prodotti prodotto = new Prodotti();
         prodotto.setNomeProdotto(nomeProdotto);
+        prodotto.setBrand(brand);
         prodotto.setCategorie(categoria);
-        prodotto.setDescrizione(descrizzione);
+        prodotto.setDescrizione(descrizione);
         prodotto.setPrezzo(prezzo);
         prodotto.setImmagine(filename);
         prodotto.setInventario(quantita);
@@ -175,7 +176,7 @@ public Prodotti createProdottoWithImage(
     }
             
 
-            public void createProdotto(String nomeProdotto, Long categorieId, BigDecimal prezzo, int quantita,
+            public void createProdotto(String nomeProdotto, Long categorieId, String brand, BigDecimal prezzo, int quantita,
             String descrizione, String fileName) {
 
         Prodotti prodotto = new Prodotti();
@@ -194,6 +195,10 @@ public Prodotti createProdottoWithImage(
         prodottiRepository.save(prodotto);
         }
 
+        public List<Prodotti> findTop5ProdottiPerHomepage() {
+            return prodottiRepository.findTop5ByOrderByNomeProdottoAsc();
+        }
 
+       
     
 }

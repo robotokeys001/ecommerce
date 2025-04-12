@@ -1,21 +1,101 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="it">
 <head>
-    <title>Dashboard Amministratore</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Amministratore - Il Nostro Ecommerce</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 20px;
+            background-color: #f4f4f4;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        h1 {
+            color: #dc3545; /* Un colore più admin-style */
+            margin-bottom: 20px;
+        }
+        .admin-dashboard-container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            width: 500px;
+            max-width: 95%;
+            text-align: center;
+        }
+        .admin-actions {
+            list-style: none;
+            padding: 0;
+        }
+        .admin-actions li {
+            margin-bottom: 15px;
+        }
+        .admin-actions li a {
+            display: block;
+            padding: 12px 15px;
+            text-decoration: none;
+            color: #fff;
+            background-color: #dc3545; /* Stesso colore dell'h1 per coerenza admin */
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+            font-weight: bold;
+            text-align: center;
+        }
+        .admin-actions li a:hover {
+            background-color: #c82333;
+        }
+        .logout-form {
+            display: inline-block;
+        }
+        .logout-button {
+            background-color: #6c757d; /* Un colore diverso per il logout */
+            color: white;
+            border: none;
+            padding: 12px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+            font-size: inherit;
+        }
+        .logout-button:hover {
+            background-color: #5a6268;
+        }
+    
+.product-image:hover {
+    transform: scale(1.05);
+    transition: transform 0.2s ease-in-out;
+}
+.badge-available {
+    color: #28a745;
+    font-weight: bold;
+}
+.badge-unavailable {
+    color: #dc3545;
+    font-weight: bold;
+}
+
+</style>
 </head>
 <body>
-    <h1>Benvenuto nella Dashboard Amministratore!</h1>
+    <div class="admin-dashboard-container">
+        <h1>Benvenuto nella Dashboard Amministratore!</h1>
 
-    <ul>
-        <li><a th:href="@{/admin/categorie}">Gestione Categorie</a></li>
-        <li><a th:href="@{/admin/prodotti/add}">Aggiungi Prodotto</a></li>
-        <li><a th:href="@{/admin/prodotti}">Gestione Prodotti</a></li>
-        <li><a th:href="@{/admin/utenti}">Gestione Utenti</a></li>
-        <li>
-            <form th:action="@{/logout}" method="post">
-                <input type="submit" value="Logout"/>
-            </form>
-        </li>
-    </ul>
+        <ul class="admin-actions">
+            <li><a th:href="@{/admin/categorie}">Gestione Categorie</a></li>
+            <li><a th:href="@{/admin/prodotti/add}">Aggiungi Prodotto</a></li>
+            <li><a th:href="@{/admin/prodotti}">Gestione Prodotti</a></li>
+            <li><a th:href="@{/admin/utenti}">Gestione Utenti</a></li>
+            <li>
+                <form th:action="@{/logout}" method="post" class="logout-form">
+                    <button type="submit" value="Logout" class="logout-button">Logout</button>
+                </form>
+            </li>
+        </ul>
+    </div>
 </body>
 </html>

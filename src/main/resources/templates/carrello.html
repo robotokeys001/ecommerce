@@ -1,56 +1,215 @@
 <!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Il Tuo Carrello - Il Nostro Ecommerce</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 20px;
+            background-color: #f4f4f4;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        h1 {
+            color: #007bff;
+            margin-bottom: 20px;
+        }
+        .empty-cart {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .empty-cart p {
+            margin-bottom: 10px;
+        }
+        .cart-container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            width: 800px;
+            max-width: 95%;
+            overflow-x: auto;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        thead {
+            background-color: #007bff;
+            color: white;
+            font-weight: bold;
+        }
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        tbody tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        tbody tr:hover {
+            background-color: #e9ecef;
+        }
+        td form {
+            display: inline;
+            margin-right: 10px;
+        }
+        td button[type="submit"] {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+        }
+        td button[type="submit"]:hover {
+            background-color: #c82333;
+        }
+        td label {
+            margin-right: 5px;
+            font-weight: bold;
+        }
+        td input[type="number"] {
+            width: 60px;
+            padding: 6px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        .cart-total {
+            margin-top: 20px;
+            text-align: right;
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+        .cart-actions {
+            margin-top: 20px;
+            text-align: right;
+        }
+        .cart-actions button {
+            background-color: #ffc107;
+            color: #333;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-left: 10px;
+            transition: background-color 0.3s ease;
+        }
+        .cart-actions button:hover {
+            background-color: #e0a800;
+        }
+        .continue-shopping {
+            margin-top: 15px;
+            text-align: center;
+        }
+        .continue-shopping a {
+            color: #007bff;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .continue-shopping a:hover {
+            text-decoration: underline;
+        }
+        .checkout-button {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1.1em;
+            transition: background-color 0.3s ease;
+        }
+        .checkout-button:hover {
+            background-color: #218838;
+        }
+
+.product-image:hover {
+    transform: scale(1.05);
+    transition: transform 0.2s ease-in-out;
+}
+.badge-available {
+    color: #28a745;
+    font-weight: bold;
+}
+.badge-unavailable {
+    color: #dc3545;
+    font-weight: bold;
+}
+</style>
+<!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Carrello</title>
-</head>
+    <link rel="stylesheet" href="/css/style.css"> </head>
 <body>
-    <h1>Il tuo Carrello</h1>
+    <h1>Il Tuo Carrello</h1>
 
-    <div th:if="${carrelloItems == null or carrelloItems.isEmpty()}">
+    <div th:if="${carrelloItems == null || carrelloItems.isEmpty()}">
         <p>Il tuo carrello è vuoto.</p>
-        <p><a th:href="@{/listaprodotti}">Torna allo shop</a></p>
+        <a th:href="@{/prodotti/visualizza}">Torna allo Shop</a>
     </div>
 
-    <div th:unless="${carrelloItems == null or carrelloItems.isEmpty()}">
+    <div th:unless="${carrelloItems == null || carrelloItems.isEmpty()}">
         <table>
             <thead>
                 <tr>
                     <th>Prodotto</th>
                     <th>Quantità</th>
                     <th>Prezzo Unitario</th>
-                    <th>Prezzo Totale</th>
+                    <th>Totale Item</th>
                     <th>Azioni</th>
                 </tr>
             </thead>
             <tbody>
                 <tr th:each="item : ${carrelloItems}">
-                    <td th:text="${item.prodotto?.nomeProdotto}">Nome Prodotto</td>
-                    <td th:text="${item.quantita}">Quantità</td>
-                    <td th:text="${#numbers.formatCurrency(item.prodotto?.prezzo)}">Prezzo</td>
-                    <td th:text="${#numbers.formatCurrency(item.prodotto?.prezzo * item.quantita)}">Totale</td>
                     <td>
-                        <form th:action="@{/carrello/rimuovi/{prodottoId}(prodottoId=${item.prodotto?.id})}" method="post">
-                            <input type="hidden" name="_method" value="delete" />
-                            <button type="submit">Rimuovi</button>
-                        </form>
-                        <form th:action="@{/carrello/aggiorna}" method="post">
-                            <input type="hidden" name="_method" value="put" />
-                            <input type="hidden" name="prodottoId" th:value="${item.prodotto?.id}" />
-                            <label for="quantita">Quantità:</label>
-                            <input type="number" id="quantita" name="quantita" th:value="${item.quantita}" min="1" />
-                            <button type="submit">Aggiorna</button>
-                        </form>
+                        <span th:if="${item.prodotti != null}" th:text="${item.prodotti.nomeProdotto}">Nome Prodotto</span>
+                        <span th:if="${item.prodotti == null}">Prodotto non disponibile</span>
+                    </td>
+                    <td>
+                        <span th:text="${item.quantita}"></span>
+                    </td>
+                    <td>
+                        <span th:if="${item.prodotti != null}" th:text="${#numbers.formatCurrency(item.prodotti.prezzo)}">Prezzo</span>
+                        <span th:if="${item.prodotti == null}">N/A</span>
+                    </td>
+                    <td>
+                        <span th:if="${item.prodotti != null}" th:text="${#numbers.formatCurrency(item.prodotti.prezzo * item.quantita)}">Totale Item</span>
+                        <span th:if="${item.prodotti == null}">N/A</span>
+                    </td>
+                    <td>
+                        <a th:href="@{/carrello/rimuovi/{id}(id=${item.id})}">Rimuovi</a>
                     </td>
                 </tr>
             </tbody>
         </table>
 
-        <p>Totale Carrello: <span th:text="${#numbers.formatCurrency(carrelloItems.stream().mapToDouble(item -> item.prodotto?.prezzo * item.quantita).sum())}"></span></p>
-        <form th:action="@{/carrello/svuota}" method="post">
-            <button type="submit">Svuota Carrello</button>
-        </form>
-        <p><a th:href="@{/checkout}">Procedi al Checkout</a></p>
-        <p><a th:href="@{/listaprodotti}">Continua lo shopping</a></p>
+        <div class="cart-total">
+            Totale Carrello:
+            <span th:with="total=0">
+                <span th:each="item : ${carrelloItems}">
+                    <span th:if="${item.prodotti != null}" th:with="total=${total + (item.prodotti.prezzo * item.quantita)}"></span>
+                </span>
+                <span th:text="${#numbers.formatCurrency(total)}"></span>
+            </span>
+        </div>
+
+        <a th:href="@{/checkout}">Procedi al Checkout</a>
     </div>
-</body>
+
+    </body>
 </html>

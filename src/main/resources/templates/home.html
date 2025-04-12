@@ -1,41 +1,177 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="it">
 <head>
-    <title>Homepage</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Homepage - Il Nostro Ecommerce</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 20px;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        h1 {
+            color: #007bff;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .welcome-message {
+            background-color: #e9ecef;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .flash-message {
+            background-color: #d4edda;
+            color: #155724;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        .product-section {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        .product-list {
+            list-style: none;
+            padding: 0;
+        }
+        .product-item {
+            border-bottom: 1px solid #ddd;
+            padding: 10px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .product-item:last-child {
+            border-bottom: none;
+        }
+        .product-item a {
+            text-decoration: none;
+            color: #007bff;
+            font-weight: bold;
+        }
+        .product-item span {
+            color: #6c757d;
+        }
+        .no-products {
+            color: #dc3545;
+            font-style: italic;
+        }
+        .navigation {
+            background-color: #fff;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .navigation ul {
+            list-style: none;
+            padding: 0;
+            display: inline-block;
+        }
+        .navigation ul li {
+            display: inline;
+            margin: 0 15px;
+        }
+        .navigation ul li a {
+            text-decoration: none;
+            color: #333;
+            font-weight: bold;
+        }
+        .navigation ul li form {
+            display: inline;
+        }
+        .navigation ul li form input[type="submit"] {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .navigation ul li form input[type="submit"]:hover {
+            background-color: #c82333;
+        }
+        .auth-links a {
+            color: #007bff;
+            margin-left: 10px;
+        }
+        .product-item-with-image {
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid #ddd;
+            padding: 15px 0;
+        }
+        .product-item-with-image:last-child {
+            border-bottom: none;
+        }
+        .product-image-home {
+            max-width: 80px;
+            height: auto;
+            margin-right: 15px;
+            border-radius: 4px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        }
+        .product-info-home {
+            flex-grow: 1;
+        }
+    </style>
 </head>
 <body>
-    <h1>Benvenuto nella Homepage del nostro Ecommerce!</h1>
-    <p th:if="${username}">Ciao, <span th:text="${username}"></span>!</p>
-    <p th:unless="${username}">Benvenuto, ospite!</p>
+    <h1>Benvenuto nel Nostro Ecommerce!</h1>
 
-    <div th:if="${msg}">
-        <p th:text="${msg}"></p>
+    <div class="welcome-message" th:if="${username}">
+        Ciao, <span th:text="${username}" style="font-weight: bold;"></span>!
+    </div>
+    <div class="welcome-message" th:unless="${username}">
+        Benvenuto, ospite!
     </div>
 
-    <div th:if="${products != null and not products.isEmpty()}">
-        <h2>I nostri prodotti:</h2>
-        <ul>
-            <li th:each="prodotto : ${products}">
-                <a th:href="@{/prodotto/{id}(id=${prodotto.id})}" th:text="${prodotto.nome}">Nome Prodotto</a> - Prezzo: <span th:text="${#numbers.formatCurrency(prodotto.prezzo)}"></span>
+    <div class="flash-message" th:if="${msg}">
+        <p th:text="${msg}"></p>
+    </div>
+    <div class="product-section" th:if="${products != null and not products.isEmpty()}">
+        <h2>I Nostri Prodotti Più Recenti:</h2>
+        <ul class="product-list">
+            <li class="product-item-with-image" th:each="prodotto : ${products}">
+                <img th:if="${prodotto.immagine}" th:src="@{'/uploads/' + ${prodotto.immagine}}" alt="${prodotto.nomeProdotto}" class="product-image-home" />
+                <div class="product-info-home">
+                    <a th:href="@{/prodotto/{id}(id=${prodotto.id})}" th:text="${prodotto.nomeProdotto}">Nome Prodotto</a>
+                    <span th:if="${prodotto.brand}"> - Marca: <span th:text="${prodotto.brand}"></span></span>
+                </div>
+                <span>Prezzo: <span th:text="${#numbers.formatCurrency(prodotto.prezzo)}"></span></span>
             </li>
         </ul>
     </div>
-    <div th:if="${products == null or products.isEmpty() and msg == null}">
-        <p>Nessun prodotto disponibile al momento.</p>
+  
+    <div class="product-section" th:if="${products == null or products.isEmpty() and msg == null}">
+        <p class="no-products">Nessun prodotto disponibile al momento.</p>
     </div>
 
-    <ul>
-        <li><a th:href="@{/prodotti}">Visualizza tutti i prodotti</a></li>
-        <li><a th:href="@{/categorie}">Esplora le categorie</a></li>
-        <li><a th:href="@{/carrello/display}">Vai al carrello</a></li>
-        <li sec:authorize="!isAuthenticated()">
-            <a th:href="@{/login}">Accedi</a> oppure <a th:href="@{/registrazione}">Registrati</a>
-        </li>
-        <li sec:authorize="isAuthenticated()">
-            <form th:action="@{/logout}" method="post">
-                <input type="submit" value="Logout"/>
-            </form>
-        </li>
-    </ul>
+    <nav class="navigation">
+        <ul>
+            <li><a th:href="@{/public/listaprodotti}">Visualizza Tutti i Prodotti</a></li>
+            <li><a th:href="@{/public/categorie}">Esplora le Categorie</a></li>
+            <li><a th:href="@{/carrello/display}">Vai al Carrello</a></li>
+            <li sec:authorize="!isAuthenticated()" class="auth-links">
+                <a th:href="@{/login}">Accedi</a> oppure
+                <a th:href="@{/public/registrazione}">Registrati</a>
+            </li>
+            <li sec:authorize="isAuthenticated()">
+                <form th:action="@{/logout}" method="post">
+                    <input type="submit" value="Logout"/>
+                </form>
+            </li>
+        </ul>
+    </nav>
 </body>
 </html>

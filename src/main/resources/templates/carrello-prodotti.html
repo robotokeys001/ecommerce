@@ -1,18 +1,98 @@
 <!DOCTYPE html>
-<html>
+<html xmlns:th="http://www.thymeleaf.org" lang="it">
 <head>
-    <title>Gestione Prodotti Carrello</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestione Prodotti Carrello - Il Nostro Ecommerce (Admin)</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 20px;
+            background-color: #f4f4f4;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        h1 {
+            color: #dc3545; /* Un colore più admin-style */
+            margin-bottom: 20px;
+        }
+        .cart-management-container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            width: 80%;
+            max-width: 600px;
+        }
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+        li {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid #eee;
+        }
+        li:last-child {
+            border-bottom: none;
+        }
+        li span {
+            flex-grow: 1;
+            margin-right: 15px;
+        }
+        li form {
+            margin-left: auto;
+        }
+        li button[type="submit"] {
+            background-color: #dc3545; /* Rosso per l'eliminazione */
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+        }
+        li button[type="submit"]:hover {
+            background-color: #c82333;
+        }
+        .back-to-dashboard {
+            margin-top: 20px;
+            text-align: center;
+        }
+        .back-to-dashboard a {
+            color: #dc3545;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .back-to-dashboard a:hover {
+            text-decoration: underline;
+        }
+    </style>
 </head>
 <body>
-    <h1>Prodotti nel Carrello</h1>
-    <ul>
-        <li th:each="cp : ${carrelloProdotti}">
-            <span th:text="${cp.prodotto.nome}">Nome prodotto</span>
-            - Quantità: <span th:text="${cp.quantita}">1</span>
-            <form th:action="@{'/carrelloProdotti/elimina/' + ${cp.id}}" method="post">
-                <button type="submit">Rimuovi</button>
-            </form>
-        </li>
-    </ul>
+    <div class="cart-management-container">
+        <h1>Prodotti nel Carrello</h1>
+        <ul>
+            <li th:each="cp : ${carrelloProdotti}">
+                <span>
+                    <img th:if="${cp.prodotto.immagine}" th:src="@{'/uploads/' + ${cp.prodotto.immagine}}" alt="img" style="max-width: 40px; max-height: 40px; margin-right: 10px;"/>
+        <span th:text="${cp.prodotto.nome}">Nome prodotto</span>
+                    - Quantità: <span th:text="${cp.quantita}">1</span>
+                </span>
+                <form th:action="@{'/carrelloProdotti/elimina/' + ${cp.id}}" method="post">
+                    <button type="submit">Rimuovi</button>
+                </form>
+            </li>
+        </ul>
+    </div>
+
+    <div class="back-to-dashboard">
+        <p><a th:href="@{/admin/dashboard}">Torna alla Dashboard</a></p>
+    </div>
 </body>
 </html>

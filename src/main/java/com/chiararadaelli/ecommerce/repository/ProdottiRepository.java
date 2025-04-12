@@ -15,5 +15,5 @@ public interface ProdottiRepository extends JpaRepository<Prodotti, Long>{
      Page<Prodotti> findAll(Specification<Prodotti> spec, Pageable pageable);
      List<Prodotti> findByBrand(String brand);
      Page<Prodotti> findByCategorieNomeCategorie(String nomeCategorie, Pageable pageable);
-     
+     List<Prodotti> findTop5ByOrderByNomeProdottoAsc(); // O Desc
 }

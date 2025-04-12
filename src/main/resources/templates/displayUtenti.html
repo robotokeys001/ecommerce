@@ -1,45 +1,156 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="it">
 <head>
-    <title>Gestione Utenti</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestione Utenti - Il Nostro Ecommerce (Admin)</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 20px;
+            background-color: #f4f4f4;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        h1 {
+            color: #dc3545; /* Un colore più admin-style */
+            margin-bottom: 20px;
+        }
+        .admin-panel {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            width: 80%;
+            max-width: 1000px;
+        }
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: #fff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+        thead {
+            background-color: #dc3545;
+            color: white;
+            font-weight: bold;
+        }
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        tbody tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        tbody tr:hover {
+            background-color: #e9ecef;
+        }
+        td a {
+            color: #007bff;
+            text-decoration: none;
+            margin-right: 10px;
+            font-weight: bold;
+        }
+        td a:hover {
+            text-decoration: underline;
+        }
+        .no-users {
+            color: #dc3545;
+            font-style: italic;
+            text-align: center;
+            padding: 15px;
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+        .back-to-dashboard {
+            margin-top: 20px;
+            text-align: center;
+        }
+        .back-to-dashboard a {
+            color: #dc3545;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .back-to-dashboard a:hover {
+            text-decoration: underline;
+        }
+        .actions a {
+            margin-right: 5px;
+        }
+        .edit-link {
+            color: #007bff;
+        }
+        .delete-link {
+            color: #dc3545;
+        }
+    </style>
 </head>
 <body>
-    <h1>Gestione Utenti</h1>
+    <div class="admin-panel">
+        <h1>Gestione Utenti</h1>
 
-    <div th:if="${successMessage}" class="success">
-        <p th:text="${successMessage}"></p>
-    </div>
-    <div th:if="${errorMessage}" class="error">
-        <p th:text="${errorMessage}"></p>
-    </div>
+        <div th:if="${successMessage}" class="success">
+            <p th:text="${successMessage}"></p>
+        </div>
+        <div th:if="${errorMessage}" class="error">
+            <p th:text="${errorMessage}"></p>
+        </div>
 
-    <div th:if="${utenti == null or utenti.isEmpty()}">
-        <p>Nessun utente registrato.</p>
-    </div>
-    <div th:unless="${utenti == null or utenti.isEmpty()}">
-        <table>
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Nome Utente</th>
-                    <th>Email</th>
-                    <th>Ruolo</th>
-                    <th>Azioni</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr th:each="utente : ${utenti}">
-                    <td th:text="${utente.utentiId}">ID</td>
-                    <td th:text="${utente.nome}">Nome</td>
-                    <td th:text="${utente.email}">Email</td>
-                    <td th:text="${utente.ruoli?.nomeRuolo}">Ruolo</td>
-                    <td>
+        <div th:if="${utenti == null or utenti.isEmpty()}" class="no-users">
+            <p>Nessun utente registrato.</p>
+        </div>
+        <div th:unless="${utenti == null or utenti.isEmpty()}">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nome Utente</th>
+                        <th>Email</th>
+                        <th>Ruolo</th>
+                        <th>Azioni</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="utente : ${utenti}">
+                        <td th:text="${utente.utentiId}">ID</td>
+                        <td th:text="${utente.nome}">Nome</td>
+                        <td th:text="${utente.email}">Email</td>
+                        <td th:text="${utente.ruoli?.nomeRuolo}">Ruolo</td>
+                        <td class="actions">
+                            Nessuna azione disponibile
                         </td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
 
-    <p><a th:href="@{/admin/dashboard}">Torna alla Dashboard</a></p>
+        <div class="back-to-dashboard">
+            <p><a th:href="@{/admin/dashboard}">Torna alla Dashboard</a></p>
+        </div>
+    </div>
 </body>
 </html>

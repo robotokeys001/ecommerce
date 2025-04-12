@@ -26,4 +26,7 @@ public interface CarrelloProdottiRepository extends JpaRepository<CarrelloProdot
     BigDecimal getTotaleCarrello(@Param("carrello") Carrello carrello);
 
     void deleteAllByCarrello(Carrello carrello);
+
+    @Query("SELECT cp FROM CarrelloProdotti cp JOIN FETCH cp.prodotti WHERE cp.carrello = :carrello")
+    List<CarrelloProdotti> findByCarrelloWithProdotti(@Param("carrello") Carrello carrello);
 }

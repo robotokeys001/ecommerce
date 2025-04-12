@@ -1,9 +1,6 @@
 package com.chiararadaelli.ecommerce.model;
 
-   
 import lombok.Data;
-
-import java.util.List;
 
 import jakarta.persistence.*;
 
@@ -12,18 +9,22 @@ import jakarta.persistence.*;
 @Table(name = "ruoli")
 public class Ruoli {
 
-
-
     @Id
-    @GeneratedValue(strategy= GenerationType.AUTO,generator="native")
+    @GeneratedValue(strategy = GenerationType.AUTO, generator = "native")
     private Long ruoliId;
 
     @Column(name = "nomeruolo")
     private String nomeRuolo;
 
-    @OneToMany(mappedBy = "ruoli")
-    private List<Utenti> utenti;
+    // Rimuovi o commenta la relazione con Utenti nel toString()
+    // @OneToMany(mappedBy = "ruoli")
+    // private List<Utenti> utenti;
+
+    @Override
+    public String toString() {
+        return "Ruoli{" +
+               "ruoliId=" + ruoliId +
+               ", nomeRuolo='" + nomeRuolo + '\'' +
+               '}';
+    }
 }
-
-
-

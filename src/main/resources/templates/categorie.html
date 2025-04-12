@@ -1,61 +1,228 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="it">
 <head>
-    <title>Gestione Categorie</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestione Categorie - Il Nostro Ecommerce (Admin)</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 20px;
+            background-color: #f4f4f4;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        h1 {
+            color: #dc3545; /* Un colore più admin-style */
+            margin-bottom: 20px;
+        }
+        .admin-panel {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            width: 80%;
+            max-width: 900px;
+        }
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        h2 {
+            color: #555;
+            margin-top: 25px;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 5px;
+        }
+        .add-category-form div {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+        .add-category-form label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #555;
+        }
+        .add-category-form input[type="text"] {
+            width: calc(100% - 22px);
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+            font-size: 16px;
+        }
+        .add-category-form button[type="submit"] {
+            background-color: #28a745; /* Verde per l'aggiunta */
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+            width: 100%;
+        }
+        .add-category-form button[type="submit"]:hover {
+            background-color: #218838;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: #fff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+        thead {
+            background-color: #dc3545;
+            color: white;
+            font-weight: bold;
+        }
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        tbody tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        tbody tr:hover {
+            background-color: #e9ecef;
+        }
+        td form {
+            display: inline;
+            margin-right: 10px;
+        }
+        td label {
+            margin-right: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+        td input[type="text"] {
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+            width: 150px;
+        }
+        td button[type="submit"] {
+            background-color: #007bff; /* Blu per l'aggiornamento */
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+        }
+        td button[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+        td button[type="submit"]:last-child {
+            background-color: #dc3545; /* Rosso per l'eliminazione */
+        }
+        td button[type="submit"]:last-child:hover {
+            background-color: #c82333;
+        }
+        .no-categories {
+            color: #dc3545;
+            font-style: italic;
+            text-align: center;
+            padding: 15px;
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+        .back-to-dashboard {
+            margin-top: 20px;
+            text-align: center;
+        }
+        .back-to-dashboard a {
+            color: #dc3545;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .back-to-dashboard a:hover {
+            text-decoration: underline;
+        }
+    </style>
 </head>
 <body>
-    <h1>Gestione Categorie</h1>
+    <div class="admin-panel">
+        <h1>Gestione Categorie</h1>
 
-    <div th:if="${successMessage}" class="success">
-        <p th:text="${successMessage}"></p>
-    </div>
-    <div th:if="${errorMessage}" class="error">
-        <p th:text="${errorMessage}"></p>
-    </div>
-
-    <h2>Aggiungi Nuova Categoria</h2>
-    <form th:action="@{/admin/categorie}" method="post">
-        <div>
-            <label for="nomecategoria">Nome Categoria:</label>
-            <input type="text" id="nomecategoria" name="nomecategoria" required="required"/>
+        <div th:if="${successMessage}" class="success">
+            <p th:text="${successMessage}"></p>
         </div>
-        <button type="submit">Aggiungi Categoria</button>
-    </form>
+        <div th:if="${errorMessage}" class="error">
+            <p th:text="${errorMessage}"></p>
+        </div>
 
-    <h2>Elenco Categorie</h2>
-    <div th:if="${categoria == null or categoria.isEmpty()}">
-        <p>Nessuna categoria disponibile.</p>
-    </div>
-    <div th:unless="${categoria == null or categoria.isEmpty()}">
-        <table>
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Nome Categoria</th>
-                    <th>Azioni</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr th:each="cat : ${categoria}">
-                    <td th:text="${cat.categorieId}">ID</td>
-                    <td th:text="${cat.nomeCategorie}">Nome</td>
-                    <td>
-                        <form th:action="@{/admin/categorie/update}" method="get">
-                            <input type="hidden" name="categoryid" th:value="${cat.categorieId}" />
-                            <label for="nome">Nuovo Nome:</label>
-                            <input type="text" name="nome" th:value="${cat.nomeCategorie}" required="required"/>
-                            <button type="submit">Aggiorna</button>
-                        </form>
-                        <form th:action="@{/admin/categorie/delete}" method="get">
-                            <input type="hidden" name="id" th:value="${cat.categorieId}" />
-                            <button type="submit" onclick="return confirm('Sei sicuro di voler eliminare questa categoria?')">Elimina</button>
-                        </form>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
+        <h2>Aggiungi Nuova Categoria</h2>
+        <form th:action="@{/admin/categorie}" method="post" class="add-category-form">
+            <div>
+                <label for="nomecategoria">Nome Categoria:</label>
+                <input type="text" id="nomecategoria" name="nomecategoria" required="required"/>
+            </div>
+            <button type="submit">Aggiungi Categoria</button>
+        </form>
 
-    <p><a th:href="@{/admin/dashboard}">Torna alla Dashboard</a></p>
+        <h2>Elenco Categorie</h2>
+        <div th:if="${categoria == null or categoria.isEmpty()}" class="no-categories">
+            <p>Nessuna categoria disponibile.</p>
+        </div>
+        <div th:unless="${categoria == null or categoria.isEmpty()}">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nome Categoria</th>
+                        <th>Azioni</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="cat : ${categoria}">
+                        <td th:text="${cat.categorieId}">ID</td>
+                        <td th:text="${cat.nomeCategorie}">Nome</td>
+                        <td>
+                            <form th:action="@{/admin/categorie/update}" method="post" style="display:inline;">
+                                <input type="hidden" name="categoryid" th:value="${cat.categorieId}" />
+                                <label for="nome">Nuovo Nome:</label>
+                                <input type="text" name="nome" th:value="${cat.nomeCategorie}" required="required"/>
+                                <button type="submit">Aggiorna</button>
+                            </form>
+                            <form th:action="@{/admin/categorie/delete}" method="post" style="display:inline;">
+                                <input type="hidden" name="id" th:value="${cat.categorieId}" />
+                                <button type="submit" onclick="return confirm('Sei sicuro di voler eliminare questa categoria?')">Elimina</button>
+                            </form>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="back-to-dashboard">
+            <p><a th:href="@{/admin/dashboard}">Torna alla Dashboard</a></p>
+        </div>
+    </div>
 </body>
 </html>

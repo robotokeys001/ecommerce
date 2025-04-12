@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${prodotto != null ? prodotto.nomeProdotto + ' - Dettagli' : 'Prodotto Non Trovato'}">Dettagli Prodotto - Il Nostro Ecommerce</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 20px;
+            background-color: #f4f4f4;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        h1 {
+            color: #007bff;
+            margin-bottom: 20px;
+        }
+        .product-details-container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            width: 600px;
+            max-width: 95%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        h2 {
+            color: #333;
+            margin-top: 0;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+            width: 100%;
+            text-align: center;
+        }
+        .product-image-container {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        .product-image {
+            max-width: 300px;
+            height: auto;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .product-info {
+            width: 100%;
+            padding: 15px;
+            border: 1px solid #eee;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .product-info p {
+            margin-bottom: 10px;
+        }
+        .product-info strong {
+            font-weight: bold;
+            color: #555;
+            margin-right: 5px;
+        }
+        .add-to-cart-form {
+            width: 100%;
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+        }
+        .add-to-cart-form button[type="submit"] {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+        }
+        .add-to-cart-form button[type="submit"]:hover {
+            background-color: #218838;
+        }
+        .back-link {
+            margin-top: 25px;
+        }
+        .back-link a {
+            color: #007bff;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .back-link a:hover {
+            text-decoration: underline;
+        }
+        .not-found {
+            color: #dc3545;
+            font-style: italic;
+            text-align: center;
+            padding: 15px;
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+    
+.product-image:hover {
+    transform: scale(1.05);
+    transition: transform 0.2s ease-in-out;
+}
+.badge-available {
+    color: #28a745;
+    font-weight: bold;
+}
+.badge-unavailable {
+    color: #dc3545;
+    font-weight: bold;
+}
+</style>
+</head>
+<body>
+    <h1>Dettagli del Prodotto</h1>
+<p th:if="${prodotto.inventario > 0}" class="badge-available">Disponibile</p>
+<p th:unless="${prodotto.inventario > 0}" class="badge-unavailable">Non disponibile</p>
+
+    <div class="product-details-container" th:if="${prodotto != null}">
+        <h2 th:text="${prodotto.nomeProdotto}">Nome Prodotto</h2>
+        <div class="product-image-container">
+            <img th:if="${prodotto.immagine}" th:src="${prodotto.immagine}" alt="${prodotto.nomeProdotto}" class="product-image" />
+            <p th:unless="${prodotto.immagine}">Nessuna immagine disponibile.</p>
+        </div>
+        <div class="product-info">
+            <p><strong>Brand:</strong> <span th:text="${prodotto.brand}">Brand</span></p>
+            <p><strong>Prezzo:</strong> <span th:text="${#numbers.formatCurrency(prodotto.prezzo)}">Prezzo</span></p>
+            <p><strong>Inventario:</strong> <span th:text="${prodotto.inventario}">Inventario</span></p>
+            <p><strong>Descrizione:</strong> <span th:text="${prodotto.descrizione}">Descrizione del prodotto.</span></p>
+        </div>
+        <form th:action="@{/carrello/aggiungi}" method="post" class="add-to-cart-form">
+            <input type="hidden" name="prodottoId" th:value="${prodotto.id}" />
+            <input type="hidden" name="quantita" value="1" />
+            <button type="submit">Aggiungi al Carrello</button>
+        </form>
+
+        <div class="back-link">
+            <p><a th:href="@{/public/listaprodotti}">Torna alla Lista Prodotti</a></p>
+        </div>
+    </div>
+
+    <div class="product-details-container not-found" th:unless="${prodotto != null}">
+        <p>Prodotto non trovato.</p>
+        <div class="back-link">
+            <p><a th:href="@{/public/listaprodotti}">Torna alla Lista Prodotti</a></p>
+        </div>
+    </div>
+</body>
+</html>

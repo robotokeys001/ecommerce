@@ -41,7 +41,6 @@ public class AdminController {
     @Value("${upload.directory}")
     private String uploadDirectory;
 
-
     private final UtentiService utentiService;
 
     @Autowired
@@ -132,17 +131,18 @@ public String deleteCategoria(@RequestParam("id") Long id, RedirectAttributes re
     }
 
     @RequestMapping(value = "prodotti/update/{id}", method = RequestMethod.POST)
-public String updateProduct(@PathVariable("id") Long id, @RequestParam("nome") String nomeProdotto, @RequestParam("categoriaid") Long categorieId, @RequestParam("price") BigDecimal prezzo, @RequestParam("quantita") int quantita, @RequestParam("descrizione") String descrizzione, @RequestParam("immagine") String immagini, RedirectAttributes redirectAttributes) {
+public String updateProduct(@PathVariable("id") Long id, @RequestParam("nome") String nomeProdotto, @RequestParam("categoriaid") Long categorieId,@RequestParam("brand") String brand, @RequestParam("price") BigDecimal prezzo, @RequestParam("inventario") int inventario, @RequestParam("descrizione") String descrizione, @RequestParam("immagine") String immagini, RedirectAttributes redirectAttributes) {
     try{
         Prodotti prodotto = prodottiService.getProdottoById(id).orElse(null);
         if (prodotto != null) {
             Categorie categoria = categorieService.getCategoriaById(categorieId);
             prodotto.setNomeProdotto(nomeProdotto);
             prodotto.setCategorie(categoria);
-            prodotto.setDescrizione(descrizzione);
+            prodotto.setBrand(brand);
+            prodotto.setDescrizione(descrizione);
             prodotto.setPrezzo(prezzo);
             prodotto.setImmagine(immagini);
-            prodotto.setInventario(quantita);
+            prodotto.setInventario(inventario);
             prodottiService.updateProdotto(id, prodotto); // Passa l'ID del prodotto
             redirectAttributes.addFlashAttribute("successMessage", "Prodotto aggiornato con successo.");
         }
@@ -190,6 +190,7 @@ public ModelAndView getProducts(
   @PostMapping("/prodotti/add")
     public String addProduct(
             @RequestParam("nome") String nomeProdotto,
+            @RequestParam("brand") String brand,
             @RequestParam("categoriaid") Long categorieId,
             @RequestParam("price") BigDecimal prezzo,
             @RequestParam("inventario") int inventario,
@@ -199,9 +200,9 @@ public ModelAndView getProducts(
 
         try {
             // Crea la directory di upload se non esiste
-            Path uploadPath = Paths.get(uploadDirectory);
-            if (!Files.exists(uploadPath)) {
-                Files.createDirectories(uploadPath);
+            Path imageUploadPath = Paths.get(uploadDirectory);
+            if (!Files.exists(imageUploadPath)) {
+                Files.createDirectories(imageUploadPath);
             }
 
             String fileName = System.currentTimeMillis() + "_" + immagine.getOriginalFilename();
@@ -209,7 +210,7 @@ public ModelAndView getProducts(
             Files.copy(immagine.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
 
             prodottiService.createProdotto(
-                    nomeProdotto, categorieId, prezzo, inventario, descrizione, fileName // Salva solo il nome nel DB
+                    nomeProdotto, categorieId,brand, prezzo, inventario, descrizione, fileName // Salva solo il nome nel DB
             );
 
             redirectAttributes.addFlashAttribute("successMessage", "Prodotto aggiunto con successo.");

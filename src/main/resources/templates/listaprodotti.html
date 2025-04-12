@@ -1,18 +1,121 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="it">
 <head>
-    <title>Lista Prodotti</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista Prodotti - Il Nostro Ecommerce</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 20px;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        h1 {
+            color: #007bff;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .no-products {
+            color: #dc3545;
+            font-style: italic;
+            text-align: center;
+            padding: 15px;
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        table {
+            width: 95%;
+            margin: 0 auto 20px auto;
+            border-collapse: collapse;
+            background-color: #fff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        thead {
+            background-color: #007bff;
+            color: white;
+            font-weight: bold;
+        }
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        tbody tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        tbody tr:hover {
+            background-color: #e9ecef;
+        }
+        td a.details-link {
+            color: #007bff;
+            text-decoration: none;
+            margin-right: 10px;
+            font-weight: bold;
+        }
+        td a.details-link:hover {
+            text-decoration: underline;
+        }
+        td form {
+            display: inline;
+        }
+        td button[type="submit"] {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+        }
+        td button[type="submit"]:hover {
+            background-color: #218838;
+        }
+        .back-to-dashboard {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .back-to-dashboard a {
+            color: #007bff;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .back-to-dashboard a:hover {
+            text-decoration: underline;
+        }
+        .product-row {
+            display: flex;
+            align-items: center;
+        }
+        .product-image {
+            max-width: 80px;
+            height: auto;
+            margin-right: 10px;
+            border-radius: 4px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        }
+        .product-details {
+            flex-grow: 1;
+        }
+    </style>
 </head>
 <body>
-    <h1>Lista dei Prodotti</h1>
+    <h1>Lista dei Prodotti Disponibili</h1>
 
-    <div th:if="${products == null or products.isEmpty()}">
-        <p>Non ci sono prodotti disponibili.</p>
+    <div th:if="${products == null or products.isEmpty()}" class="no-products">
+        <p>Non ci sono prodotti disponibili al momento.</p>
     </div>
+
     <div th:unless="${products == null or products.isEmpty()}">
         <table>
             <thead>
                 <tr>
+                    <th>Immagine</th>
                     <th>Nome</th>
                     <th>Brand</th>
                     <th>Prezzo</th>
@@ -22,18 +125,49 @@
             </thead>
             <tbody>
                 <tr th:each="prodotto : ${products}">
-                    <td th:text="${prodotto.nomeProdotto}">Nome</td>
+                    <td>
+                        <img th:if="${prodotto.immagine}" th:src="@{/uploads/{filename}(filename=${prodotto.immagine})}" alt="${prodotto.nomeProdotto}" class="product-image" />
+                        <span th:unless="${prodotto.immagine}">Nessuna immagine</span>
+                    </td>
+                    <td>
+                        <div class="product-details">
+                            <span th:text="${prodotto.nomeProdotto}">Nome</span>
+                        </div>
+                    </td>
                     <td th:text="${prodotto.brand}">Brand</td>
                     <td th:text="${#numbers.formatCurrency(prodotto.prezzo)}">Prezzo</td>
                     <td th:text="${prodotto.inventario}">Inventario</td>
                     <td>
-                        <a th:href="@{/prodotto/{id}(id=${prodotto.id})}">Dettagli</a>
-                        </td>
+                        <a th:href="@{/public/prodotto/{id}(id=${prodotto.id})}" class="details-link">Dettagli</a>
+                        <form th:action="@{/carrello/aggiungi}" method="post" style="display:inline;">
+                            <input type="hidden" name="prodottoId" th:value="${prodotto.id}" />
+                            <input type="hidden" name="quantita" value="1" />
+                            <button type="submit">Aggiungi al Carrello</button>
+                        </form>
+                    </td>
                 </tr>
             </tbody>
         </table>
     </div>
 
-    <p><a th:href="@{/utente/dashboard}">Torna alla Dashboard</a></p>
+    <div class="back-to-dashboard">
+        <p><a th:href="@{/utente/dashboard}">Torna alla Dashboard</a></p>
+    </div>
+
+    <div class="back-to-dashboard">
+        <a th:href="@{/home}" style="
+            display: inline-block;
+            padding: 12px 20px;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+        " onmouseover="this.style.backgroundColor='#0056b3'" onmouseout="this.style.backgroundColor='#007bff'">
+            Torna alla Home
+        </a>
+    </div>
+
 </body>
 </html>

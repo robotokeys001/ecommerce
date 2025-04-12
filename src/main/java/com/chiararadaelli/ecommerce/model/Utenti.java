@@ -1,38 +1,62 @@
 package com.chiararadaelli.ecommerce.model;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Data;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
+import java.util.Collection;
+import java.util.Collections;
 
 @Entity
 @Data
-@Table(name = "utenti")
-public class Utenti {
-    
+public class Utenti implements UserDetails {
+
     @Id
-     @Column(name = "utenti_id")
-    @GeneratedValue(strategy= GenerationType.AUTO,generator="native")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long utentiId;
 
-   
     private String nome;
-
-    @Column(unique = true)
     private String email;
-
     private String password;
 
-
-    @OneToOne(fetch = FetchType.EAGER,cascade = CascadeType.PERSIST, targetEntity = Ruoli.class)
-    @JoinColumn(name = "ruoli_id", referencedColumnName = "ruoliId",nullable = false)
+    @ManyToOne
+    @JoinColumn(name = "ruoli_id")
     private Ruoli ruoli;
 
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        // Assicurati che 'ruoli' non sia null
+        if (ruoli == null || ruoli.getNomeRuolo() == null) {
+            return Collections.emptyList();
+        }
+        // Restituisci il ruolo con il prefisso "ROLE_"
+        return Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + ruoli.getNomeRuolo()));
+    }
+
+    @Override
+    public String getUsername() {
+        return email;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true; //logica per verificare se l'account è scaduto
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true; // logica per verificare se l'account è bloccato
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true; // logica per verificare se le credenziali sono scadute
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true; // logica per verificare se l'utente è abilitato
+    }
 }

@@ -1,46 +1,143 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="it">
 <head>
-    <title>Aggiungi Prodotto</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aggiungi Prodotto - Il Nostro Ecommerce (Admin)</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 20px;
+            background-color: #f4f4f4;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        h1 {
+            color: #dc3545; /* Un colore più admin-style */
+            margin-bottom: 20px;
+        }
+        .add-product-container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            width: 600px;
+            max-width: 95%;
+        }
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        div {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #555;
+        }
+        input[type="text"],
+        input[type="number"],
+        input[type="file"],
+        select,
+        textarea {
+            width: calc(100% - 22px);
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+            font-size: 16px;
+        }
+        textarea {
+            min-height: 100px;
+        }
+        select option {
+            padding: 8px;
+        }
+        button[type="submit"] {
+            background-color: #28a745; /* Un colore per le azioni di aggiunta */
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+            width: 100%;
+        }
+        button[type="submit"]:hover {
+            background-color: #218838;
+        }
+        .admin-links {
+            margin-top: 20px;
+            text-align: center;
+        }
+        .admin-links a {
+            color: #dc3545; /* Stesso colore dell'h1 per coerenza admin */
+            text-decoration: none;
+            font-weight: bold;
+            margin: 0 10px;
+        }
+        .admin-links a:hover {
+            text-decoration: underline;
+        }
+    </style>
 </head>
 <body>
-    <h1>Aggiungi Nuovo Prodotto</h1>
+    <div class="add-product-container">
+        <h1>Aggiungi Nuovo Prodotto</h1>
 
-    <div th:if="${errorMessage}" class="error">
-        <p th:text="${errorMessage}"></p>
+        <div th:if="${errorMessage}" class="error">
+            <p th:text="${errorMessage}"></p>
+        </div>
+
+        <form th:action="@{/admin/prodotti/add}" method="post" enctype="multipart/form-data">
+            <div>
+                <label for="nome">Nome Prodotto:</label>
+                <input type="text" id="nome" name="nome" required="required"/>
+            </div>
+            <div>
+                <label for="brand">Brand:</label>
+                <input type="text" id="brand" name="brand" step="0.01" required="required"/>
+            </div>
+            <div>
+                <label for="categoriaid">Categoria:</label>
+                <select id="categoriaid" name="categoriaid" required="required">
+                    <option th:each="categoria : ${categorie}" th:value="${categoria.categorieId}" th:text="${categoria.nomeCategorie}"></option>
+                </select>
+            </div>
+            <div>
+                <label for="price">Prezzo:</label>
+                <input type="number" id="price" name="price" step="0.01" required="required"/>
+            </div>
+            <div>
+                <label for="inventario">Quantità:</label>
+                <input type="number" id="inventario" name="inventario" required="required"/>
+            </div>
+            <div>
+                <label for="descrizione">Descrizione:</label>
+                <textarea id="descrizione" name="descrizione"></textarea>
+            </div>
+            <div>
+                <label for="immagine">Immagine:</label>
+                <input type="file" id="immagine" name="immagine"/>
+            </div>
+            <button type="submit">Aggiungi Prodotto</button>
+        </form>
+
+        <div class="admin-links">
+            <p><a th:href="@{/admin/prodotti}">Torna alla Gestione Prodotti</a></p>
+            <p><a th:href="@{/admin/dashboard}">Torna alla Dashboard</a></p>
+        </div>
     </div>
-
-    <form th:action="@{/admin/prodotti/add}" method="post" enctype="multipart/form-data">
-        <div>
-            <label for="nome">Nome Prodotto:</label>
-            <input type="text" id="nome" name="nome" required="required"/>
-        </div>
-        <div>
-            <label for="categoriaid">Categoria:</label>
-            <select id="categoriaid" name="categoriaid" required="required">
-                <option th:each="categoria : ${categorie}" th:value="${categoria.categorieId}" th:text="${categoria.nomeCategorie}"></option>
-            </select>
-        </div>
-        <div>
-            <label for="price">Prezzo:</label>
-            <input type="number" id="price" name="price" step="0.01" required="required"/>
-        </div>
-        <div>
-            <label for="inventario">Quantità:</label>
-            <input type="number" id="inventario" name="inventario" required="required"/>
-        </div>
-        <div>
-            <label for="descrizione">Descrizione:</label>
-            <textarea id="descrizione" name="descrizione"></textarea>
-        </div>
-        <div>
-            <label for="immagine">Immagine:</label>
-            <input type="file" id="immagine" name="immagine"/>
-        </div>
-        <button type="submit">Aggiungi Prodotto</button>
-    </form>
-
-    <p><a th:href="@{/admin/prodotti}">Torna alla Gestione Prodotti</a></p>
-    <p><a th:href="@{/admin/dashboard}">Torna alla Dashboard</a></p>
 </body>
 </html>

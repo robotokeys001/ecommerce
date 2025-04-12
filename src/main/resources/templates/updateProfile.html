@@ -1,26 +1,118 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="it">
 <head>
-    <title>Profilo Utente</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Il Tuo Profilo Utente - Il Nostro Ecommerce</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 20px;
+            background-color: #f4f4f4;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        h1 {
+            color: #007bff;
+            margin-bottom: 20px;
+        }
+        .profile-container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            width: 500px;
+            max-width: 95%;
+        }
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        .profile-info p {
+            margin-bottom: 10px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #eee;
+        }
+        .profile-info p:last-child {
+            border-bottom: none;
+        }
+        .profile-info strong {
+            font-weight: bold;
+            color: #555;
+            margin-right: 5px;
+        }
+        .profile-actions {
+            margin-top: 25px;
+            text-align: center;
+        }
+        .profile-actions a {
+            display: inline-block;
+            padding: 10px 15px;
+            text-decoration: none;
+            color: #fff;
+            background-color: #007bff;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        .profile-actions a:hover {
+            background-color: #0056b3;
+        }
+        .no-profile {
+            color: #dc3545;
+            font-style: italic;
+            text-align: center;
+            padding: 15px;
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+        .back-to-dashboard {
+            margin-top: 20px;
+            text-align: center;
+        }
+        .back-to-dashboard a {
+            color: #007bff;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .back-to-dashboard a:hover {
+            text-decoration: underline;
+        }
+    </style>
 </head>
 <body>
-    <h1>Il tuo Profilo</h1>
+    <h1>Il Tuo Profilo Utente</h1>
 
-    <div th:if="${msg}" class="success">
-        <p th:text="${msg}"></p>
+    <div class="profile-container">
+        <div th:if="${msg}" class="success">
+            <p th:text="${msg}"></p>
+        </div>
+
+        <div th:if="${userid}" class="profile-info">
+            <p><strong>ID Utente:</strong> <span th:text="${userid}"></span></p>
+            <p><strong>Nome Utente:</strong> <span th:text="${username}"></span></p>
+            <p><strong>Email:</strong> <span th:text="${email}"></span></p>
+        </div>
+        <div th:unless="${userid}" class="no-profile">
+            <p th:text="${msg ?: 'Informazioni sul profilo non disponibili.'}"></p>
+        </div>
+
+        <div class="profile-actions" th:if="${userid}">
+            <a th:href="@{/utente/modifica-profilo}">Modifica il tuo profilo</a>
+        </div>
+
+        <div class="back-to-dashboard">
+            <p><a th:href="@{/utente/dashboard}">Torna alla Dashboard</a></p>
+        </div>
     </div>
-
-    <div th:if="${userid}">
-        <p>ID Utente: <span th:text="${userid}"></span></p>
-        <p>Nome Utente: <span th:text="${username}"></span></p>
-        <p>Email: <span th:text="${email}"></span></p>
-
-        <p><a th:href="@{/utente/modifica-profilo}">Modifica il tuo profilo</a></p>
-    </div>
-    <div th:unless="${userid}">
-        <p th:text="${msg}"></p>
-    </div>
-
-    <p><a th:href="@{/utente/dashboard}">Torna alla Dashboard</a></p>
 </body>
 </html>
